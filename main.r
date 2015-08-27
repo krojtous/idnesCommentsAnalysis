@@ -26,3 +26,6 @@ groupResults = analyzeGroups( relations, comments )
 #----------------------------EXPORT DATA-------------------------------------------------------
 #TO DO
 file.choose()
+
+install.packages("igraph")
+install.packages("/home/matous/Documents/plyr_1.8.3.tar.gz", repos = NULL, type="source")
