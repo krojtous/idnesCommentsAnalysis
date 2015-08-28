@@ -6,18 +6,23 @@ analyzeGroups = function( graph, comments, relationsOrig ){
     #----main function for analyzing groups
     
     groups = findGroups( graph )
-    drawGraph( graph, groups )
-    selectTypicalComments(relationsOrig, groups, comments)
+    out = list()
+    for(i in  1:length(groups)){
+        out[[i]] = describeGroup( graph, groups, i )
+    }
+    #drawGraph( graph, groups )
+    return = out
   
 }
+
 #--------------------------------------findGroups-----------------------------------------
-findGroups = function ( network ){
+findGroups = function ( graph ){
    
     
-    wc         = walktrap.community( network )
-    #wc       = cluster_spinglass( network, spins = 3 ) #spins means how many groups we are looking for
+    groups  = walktrap.community( graph )
+    #wc     = cluster_spinglass( network, spins = 3 ) #spins means how many groups we are looking for
     
-    return = wc
+    return = groups
 }
 
 #-----------------------------------drawGraph------------------------------------------------
@@ -35,6 +40,20 @@ drawGraph = function( graph, groups ){
     #dev.off()
 }
 
+#-----------------------------------describeGroup-------------------------------------------
+describeGroup = function( graph, groups, i ){
+    
+    #----function which describe one group in basic stats (in degree, out degree, typical commnets, number of vertices...)
+    groupColorEng   = c("red","green","blue", "orange", "grey")
+    out = list(
+        numberOfGroup = i,
+        colorOfGroup  = groupColorEng[i],
+        size = sizes(groups)[ i ],
+        groupSignificance =communitySignificanceTest( graph, groups, i )
+    )
+    #selectTypicalComments(relationsOrig, groups, comments)
+    return = out
+}
 
 #-----------------------------------selectTypicalcomments------------------------------------
 selectTypicalComments = function(relationsOrig, wc, comments){
@@ -69,5 +88,16 @@ chooseTypicalCommentsOfOneGroup = function(wc, relations, group, number = 3){ #P
     commentTable = commentTable[order(-commentTable$Fre),]
     return = commentTable[1:number ,1]
     
-}  
+}
+
+#-----------------------communitySignificanceTest---------------------------------------
+communitySignificanceTest = function(graph, groups, i) {
+    
+    vs = V(graph)[which(membership(groups) == i)]
+    subgraph     = induced.subgraph( graph, vs )
+    in.degrees   = degree(subgraph)
+    out.degrees  = degree(graph, vs) - in.degrees
+    a = wilcox.test(in.degrees, out.degrees)
+    return = a$statistic
+}
 
