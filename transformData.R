@@ -5,8 +5,8 @@
 transformData = function ( relations ){
     relations = weightPositiveRelations( relations )
     relations = transfromWeights       ( relations )
-    
-    return = relations
+    graph     = transformToGraph       ( relations )
+    return    = graph
 }
 
 
@@ -26,4 +26,15 @@ transfromWeights = function(relationsW){
     #-----Upraví vztahy (divede by 10 and floor)
     relationsW[,3] = floor((relationsW[,3]/10))
     return = relationsW[which(relationsW[,3] > 0),]
+}
+#------------------------transformToGraph---------------------------------
+transformToGraph = function(relations){
+    require(igraph)
+    relationsW = as.matrix(relations)
+    graph      = graph.data.frame(relationsW, directed=F)
+    
+    #select only biggest coherent component in the graph
+    component = components( graph )
+    graph     = induced.subgraph( graph, V(graph)[which(component$membership == which.max(component$csize))])
+    return    = graph
 }

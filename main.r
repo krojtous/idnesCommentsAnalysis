@@ -11,18 +11,18 @@ source("/media/matous/A4E0A47DE0A456F8/Dokumenty/R/idnesCommentsAnalysis/transfo
 source("/media/matous/A4E0A47DE0A456F8/Dokumenty/R/idnesCommentsAnalysis/analyzeGroups.R")
 
 #----------------------------LOAD DATA----------------------------------------------------------
-relations = read.csv("/media/matous/A4E0A47DE0A456F8/Dokumenty/Sociologie/Diplomová práce/Data/Relations/relations_2015_02.csv")
-comments = read.csv("/media/matous/A4E0A47DE0A456F8/Dokumenty/Sociologie/Diplomová práce/Data/Relations/comments_2015_02.csv")
+relations = read.csv("/media/matous/A4E0A47DE0A456F8/Dokumenty/Sociologie/Diplomová práce/Data/Relations/relations_2015_06.csv")
+comments  = read.csv("/media/matous/A4E0A47DE0A456F8/Dokumenty/Sociologie/Diplomová práce/Data/Relations/comments_2015_06.csv")
 relationsBackup = relations
 relations = relationsBackup
 
 #----------------------------SELECT AND TRANSFROM DATA---------------------------------------------
-relations = selectData ( relations, 500, "zahranicni" )
-relations = transformData ( relations )
+relations = selectData ( relations, 3000, "" )
+graph     = transformData ( relations )
 
 #----------------------------ANALYZE DATA-------------------------------------------------------
 basicResults = analyzeBasic ( relations, comments )
-groupResults = analyzeGroups( relations, comments, relationsBackup )
+groupResults = analyzeGroups( graph, comments, relationsBackup )
 
 #----------------------------EXPORT DATA-------------------------------------------------------
 #TO DO
