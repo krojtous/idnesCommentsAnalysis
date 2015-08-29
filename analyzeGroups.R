@@ -1,31 +1,31 @@
 #analyzeGroups.R
 
-#---------------------------------------analyzeGroups-------------------------------------
+#-------------------------------------analyzeGroups-------------------------------------
 analyzeGroups = function( graph, comments, relationsOrig ){
     
     #----main function for analyzing groups
     
     groups = findGroups( graph )
     out = list()
-    for(i in  1:length(groups)){
+    for( i in  1:length(groups )){
         out[[i]] = describeGroup( graph, groups, i )
     }
-    #drawGraph( graph, groups )
+    drawGraph( graph, groups )
+    selectTypicalComments( relationsOrig, groups, comments )
     return = out
   
 }
 
-#--------------------------------------findGroups-----------------------------------------
+#-------------------------------------findGroups-----------------------------------------
 findGroups = function ( graph ){
-   
-    
-    groups  = walktrap.community( graph )
-    #wc     = cluster_spinglass( network, spins = 3 ) #spins means how many groups we are looking for
+    #----finds communities in graph (various options of methods)
+    #groups  = walktrap.community( graph )
+    groups  = cluster_spinglass( graph, spins = 3 ) #spins means how many groups we are looking for
     
     return = groups
 }
 
-#-----------------------------------drawGraph------------------------------------------------
+#-------------------------------------drawGraph------------------------------------------------
 drawGraph = function( graph, groups ){
     #right colors for graph
     groupColorEng   = c("red","green","blue", "orange", "grey")
@@ -40,22 +40,28 @@ drawGraph = function( graph, groups ){
     #dev.off()
 }
 
-#-----------------------------------describeGroup-------------------------------------------
+#-------------------------------------describeGroup-------------------------------------------
 describeGroup = function( graph, groups, i ){
     
     #----function which describe one group in basic stats (in degree, out degree, typical commnets, number of vertices...)
     groupColorEng   = c("red","green","blue", "orange", "grey")
     out = list(
-        numberOfGroup = i,
-        colorOfGroup  = groupColorEng[i],
-        size = sizes(groups)[ i ],
-        groupSignificance =communitySignificanceTest( graph, groups, i )
+        number   = i,
+        color    = groupColorEng[i],
+        size     = sizes(groups)[ i ],
+        groupSig = communitySignificanceTest( graph, groups, i )
     )
-    #selectTypicalComments(relationsOrig, groups, comments)
+    out = formatData( out ) #add attribute names etc.
     return = out
 }
-
-#-----------------------------------selectTypicalcomments------------------------------------
+#-------------------------------------formatData-------------------------------------------
+formatData = function( out ){
+    #----format list of data to better dormat (add names to attributes)
+    names( out$size )    = "Number of vertices"
+    names( out$groupSig) = "Wilcox significance test"
+    return = out
+}
+#-------------------------------------selectTypicalcomments------------------------------------
 selectTypicalComments = function(relationsOrig, wc, comments){
     groupColorEng   = c("red","green","blue", "orange", "grey")
     for( group in 1:length(unique(membership(wc)))){ # cyklus pro všechny skupiny v grafu          
