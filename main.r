@@ -6,9 +6,9 @@
 # SETTINGS PREDELAT DO JEDNOHO LISTU, DO EXPORTU PRIDAT MOZNOST "NO"
 
 #----------------------------SETTINGS----------------------------------------------------------
-MONTH     = 7            #<--- Which month in the year 2015 will be analyzed (in format MM, fo example 03)
-THRESHOLD = 100             #<---
-CATEGORY  = "zahranicni"    #<---
+MONTH     = 1            
+THRESHOLD = 50           
+CATEGORY  = "zahranicni"    
 EXPORT    = "HTML"
 
 
@@ -33,9 +33,8 @@ relations = selectData ( relations, THRESHOLD, CATEGORY )
 graph     = transformData ( relations )
 
 #----------------------------ANALYZE DATA------------------------------------------------------
-basicResults = analyzeBasic ( relations, comments )
+basicResults = analyzeGeneral ( graph, relations ,relationsBackup )
 groupResults = analyzeGroups( graph, comments, relationsBackup, MONTH )
 
 #----------------------------EXPORT DATA-------------------------------------------------------
 exportGroups( groupResults, EXPORT, MONTH, THRESHOLD, CATEGORY )
-

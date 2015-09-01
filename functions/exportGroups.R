@@ -1,10 +1,5 @@
 #exportGroups.R
 
-#-------------------------------------selectTypicalcomments------------------------------------
-selectTypicalCommentsB = function(relationsOrig, wc, comments){
-
-}
-
 
 #-----------------------------------exportGroups------------------------------------------------
 exportGroups = function( groupResults, EXPORT, MONTH, THRESHOLD, CATEGORY ){
@@ -23,7 +18,7 @@ exportGroupsHTML = function( groupResults, MONTH, THRESHOLD, CATEGORY ){
     <HEAD>
         <title>Results of group analysis</title>
         <meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\">
-        <link rel=\"stylesheet\" type=\"text/css\" href=\"groups.css\">
+        <link rel=\"stylesheet\" type=\"text/css\" href=\"styles/groups.css\">
         </HEAD>
       <BODY>")
     cat(paste0("
@@ -36,14 +31,26 @@ exportGroupsHTML = function( groupResults, MONTH, THRESHOLD, CATEGORY ){
                 <li>Threshold: ", THRESHOLD,"</li>",
                "</ul>"))
     
+    cat(paste0("<img src=\"graphs/",MONTH,"group_graph.png\" class=\"main_image\">"))
     cat(paste0("
-             <img src=\"graphs/",MONTH,"group_graph.png\" class=\"main_image\">"))
+<div id=\"navigation\">
+<a href=\"",MONTH,"_general.html\">General</a> |
+<a href=\"",MONTH,"_groups.html\">Groups</a> |
+<a href=\"",MONTH,"_leaders.html\">Leaders</a> |
+<a href=\"",MONTH,"_ties.html\">Ties</a> <br/>
+<a href=\"",MONTH - 1,"_groups.html\"><< Previous month</a> |   
+<a href=\"",MONTH + 1,"_groups.html\">Next month >></a>
+</div>
+"))
+    
     
     #description of each group
+    cat("<div id=\"group_desc\">")
     for(i in 1:length(groupResults)){
       exportGroupDescHTML(groupResults, i)
+      
     }
-
+    cat("</div>")
     cat("
     </BODY>
 </HTML>")
@@ -52,8 +59,8 @@ exportGroupsHTML = function( groupResults, MONTH, THRESHOLD, CATEGORY ){
 
 #------------------------------------exportGroupDescHTML----------------------------------
 exportGroupDescHTML = function( groupResults, group ){
-        groupColorEng   = c("red","green","blue", "orange", "grey")    
-        cat(paste0("<h2>Group ", groupColorEng[group],"</h2>\n"))  
+        groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
+        cat(paste0("<h2>", groupColorEng[group]," group</h2>\n"))  
         
         cat(paste0("<ul>
                         <li>Size: ", groupResults[[group]]$size, "</li>\n",
@@ -68,7 +75,7 @@ exportGroupDescHTML = function( groupResults, group ){
             cat(paste0(
                 "<li>",comments[[i]]$text, "</li>",
                 "<ul>
-                    <li>Article: ", comments[[i]]$article, "</li>
+                    <li class=\"article\">Article: ", comments[[i]]$article, " (", comments[[i]]$date,")</li>
                 </ul>\n\n"))
             
         }

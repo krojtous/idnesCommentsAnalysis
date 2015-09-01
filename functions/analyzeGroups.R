@@ -31,7 +31,7 @@ findGroups = function ( graph ){
 #-------------------------------------drawGraph------------------------------------------------
 drawGraph = function( graph, groups ){
     #right colors for graph
-    groupColorEng   = c("red","green","blue", "orange", "grey")
+    groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
     V(graph)$membership =  groups$membership
     V(graph)$color = groupColorEng[V(graph)$membership]
     
@@ -47,7 +47,7 @@ drawGraph = function( graph, groups ){
 describeGroup = function( graph, groups, comments, relationsOrig, i ){
     
     #----function which describe one group in basic stats (in degree, out degree, typical commnets, number of vertices...)
-    groupColorEng   = c("red","green","blue", "orange", "grey")
+    groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
     out = list(
         color    = groupColorEng[i],
         size     = sizes(groups)[ i ],
@@ -60,6 +60,7 @@ describeGroup = function( graph, groups, comments, relationsOrig, i ){
         out$comments[[new_id]] = list()
         out$comments[[new_id]]$text = paste(comments[which(comments$comment_id == comment_id),1]) #paste is here to conversion from factor to text
         out$comments[[new_id]]$article = paste(comments[which(comments$comment_id == comment_id),5])
+        out$comments[[new_id]]$date = paste(comments[which(comments$comment_id == comment_id),8])
         new_id = new_id + 1
     }
     
