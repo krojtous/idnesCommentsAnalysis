@@ -27,6 +27,7 @@ transfromWeights = function(relationsW){
     relationsW[,3] = floor((relationsW[,3]/10))
     return = relationsW[which(relationsW[,3] > 0),]
 }
+
 #------------------------transformToGraph---------------------------------
 transformToGraph = function(relations){
     require(igraph)

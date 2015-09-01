@@ -1,17 +1,20 @@
 #analyzeGroups.R
 
 #-------------------------------------analyzeGroups-------------------------------------
-analyzeGroups = function( graph, comments, relationsOrig ){
+analyzeGroups = function( graph, comments, relationsOrig, MONTH ){
     
     #----main function for analyzing groups
     
     groups = findGroups( graph )
     out = list()
     for( i in  1:length(groups )){
-        out[[i]] = describeGroup( graph, groups, i )
+        out[[i]] = describeGroup( graph, groups, comments, relationsOrig, i )
+        
     }
-    drawGraph( graph, groups )
-    selectTypicalComments( relationsOrig, groups, comments )
+    
+    png(filename=paste0("./output/graphs/", MONTH, "group_graph.png"))
+        drawGraph( graph, groups )
+    dev.off()
     return = out
   
 }
@@ -41,16 +44,25 @@ drawGraph = function( graph, groups ){
 }
 
 #-------------------------------------describeGroup-------------------------------------------
-describeGroup = function( graph, groups, i ){
+describeGroup = function( graph, groups, comments, relationsOrig, i ){
     
     #----function which describe one group in basic stats (in degree, out degree, typical commnets, number of vertices...)
     groupColorEng   = c("red","green","blue", "orange", "grey")
     out = list(
-        number   = i,
         color    = groupColorEng[i],
         size     = sizes(groups)[ i ],
-        groupSig = communitySignificanceTest( graph, groups, i )
+        groupSig = communitySignificanceTest( graph, groups, i ),
+        comments = list()
     )
+    
+    new_id = 1
+    for(comment_id in selectTypicalComments(groups, relationsOrig, i, 3)){
+        out$comments[[new_id]] = list()
+        out$comments[[new_id]]$text = paste(comments[which(comments$comment_id == comment_id),1]) #paste is here to conversion from factor to text
+        out$comments[[new_id]]$article = paste(comments[which(comments$comment_id == comment_id),5])
+        new_id = new_id + 1
+    }
+    
     out = formatData( out ) #add attribute names etc.
     return = out
 }
@@ -61,25 +73,10 @@ formatData = function( out ){
     names( out$groupSig) = "Wilcox significance test"
     return = out
 }
-#-------------------------------------selectTypicalcomments------------------------------------
-selectTypicalComments = function(relationsOrig, wc, comments){
-    groupColorEng   = c("red","green","blue", "orange", "grey")
-    for( group in 1:length(unique(membership(wc)))){ # cyklus pro všechny skupiny v grafu          
-        cat(paste0("Group ", groupColorEng[group],":\n"))  
-        
-        cat("Comments that group members rated most positive:\n")  
-        for(comment_id in chooseTypicalCommentsOfOneGroup(wc, relationsOrig, group, 3)){
-            cat(paste0(
-                comments[which(comments$comment_id == comment_id),1],
-                "(Article: ", comments[which(comments$comment_id == comment_id),5], ")\n\n"))
-            
-        }
-        
-    }
-}
 
-#-------------------------chooseTypicalCommentsOfOneGroup---------------------------------
-chooseTypicalCommentsOfOneGroup = function(wc, relations, group, number = 3){ #Puvodne se zde pracuje s originalnimi daty !!!!
+
+#-------------------------selectTypicalComments---------------------------------
+selectTypicalComments = function(wc, relations, group, number = 3){ #Puvodne se zde pracuje s originalnimi daty !!!!
     #----makes vector of IDs of typical commnets
     
     # Výběr jen těch ID, které patří do dané skupiny

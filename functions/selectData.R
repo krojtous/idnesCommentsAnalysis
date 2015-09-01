@@ -2,14 +2,14 @@
 
 
 #-----------------------------selectData------------------------------------------------
-selectData = function ( relations, treshold, category = "all" ){
+selectData = function ( relations, threshold, category = "all" ){
     #-----main function for selecting data
     
     relations = selectWithoutNA ( relations )
     if( category != "all" )
         relations = selectByCategory( relations, category )
-    #notice that we choose first category and then  rteshold (we want only active users in given category)
-    relations = selectByTreshold( relations, treshold )
+    #notice that we choose first category and then  treshold (we want only active users in given category)
+    relations = selectByThreshold( relations, threshold )
 }
 
 
@@ -30,8 +30,8 @@ selectByCategory = function ( relations, category )
 }
 
 
-#-------------------------selectByTreshold-------------------------------------------
-selectByTreshold = function ( relations, threshold )
+#-------------------------selectByThreshold-------------------------------------------
+selectByThreshold = function ( relations, threshold )
 {
     #----Select users which gives and get more likes than given treshold
 
