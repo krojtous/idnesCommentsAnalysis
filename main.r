@@ -6,7 +6,7 @@
 # SETTINGS PREDELAT DO JEDNOHO LISTU, DO EXPORTU PRIDAT MOZNOST "NO"
 
 #----------------------------SETTINGS----------------------------------------------------------
-MONTH     = "07"            #<--- Which month in the year 2015 will be analyzed (in format MM, fo example 03)
+MONTH     = 7            #<--- Which month in the year 2015 will be analyzed (in format MM, fo example 03)
 THRESHOLD = 100             #<---
 CATEGORY  = "zahranicni"    #<---
 EXPORT    = "HTML"
