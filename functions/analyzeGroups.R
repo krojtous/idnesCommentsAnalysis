@@ -1,7 +1,7 @@
 #analyzeGroups.R
 
 #-------------------------------------analyzeGroups-------------------------------------
-analyzeGroups = function( graph, comments, relationsOrig, MONTH ){
+analyzeGroups = function( graph, comments, relationsOrig, SETTINGS ){
     
     #----main function for analyzing groups
     
@@ -12,7 +12,7 @@ analyzeGroups = function( graph, comments, relationsOrig, MONTH ){
         
     }
     
-    png(filename=paste0("./output/graphs/", MONTH, "group_graph.png"))
+    png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "group_graph.png"))
         drawGraph( graph, groups )
     dev.off()
     return = out
@@ -36,11 +36,10 @@ drawGraph = function( graph, groups ){
     V(graph)$color = groupColorEng[V(graph)$membership]
     
     #vykresleni grafu
-    #png(filename="/media/matous/A4E0A47DE0A456F8/Dokumenty/Sociologie/Diplomová práce/group_graph.png")
     in.deg = degree(graph,v=V(graph), mode="in")
     plot(graph,  vertex.label=NA, vertex.size=log(in.deg)*2, edge.color = "black", edge.width=E(graph)$weight/2,
          main = "Graph of relations in duscussion with groups", mark.groups = NULL)
-    #dev.off()
+    
 }
 
 #-------------------------------------describeGroup-------------------------------------------

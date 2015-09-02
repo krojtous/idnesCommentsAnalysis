@@ -2,16 +2,18 @@
 
 
 #-----------------------------------exportGroups------------------------------------------------
-exportGroups = function( groupResults, EXPORT, MONTH, THRESHOLD, CATEGORY ){
-    switch( EXPORT,
-            HTML = exportGroupsHTML( groupResults, MONTH, THRESHOLD, CATEGORY ))
+exportGroups = function( groupResults, SETTINGS ){
+    switch( SETTINGS$EXPORT,
+            HTML = exportGroupsHTML( groupResults, SETTINGS ))
 }
     
 #-----------------------------------exportGroupsHTML--------------------------------------------
-exportGroupsHTML = function( groupResults, MONTH, THRESHOLD, CATEGORY ){
+exportGroupsHTML = function( groupResults, SETTINGS ){
     months = c(
         "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" 
     )
+    MONTH = SETTINGS$MONTH #for reasons of clarity of code
+    
     sink(paste0("./output/", MONTH,"_groups.html"))  
     cat("<!doctype html>
 <HTML>
@@ -27,8 +29,8 @@ exportGroupsHTML = function( groupResults, MONTH, THRESHOLD, CATEGORY ){
     
     cat(paste0("
             <ul>
-                <li>Category: ", CATEGORY,"</li>
-                <li>Threshold: ", THRESHOLD,"</li>",
+                <li>Category: ", SETTINGS$CATEGORY,"</li>
+                <li>Threshold: ", SETTINGS$THRESHOLD,"</li>",
                "</ul>"))
     
     cat(paste0("<img src=\"graphs/",MONTH,"group_graph.png\" class=\"main_image\">"))

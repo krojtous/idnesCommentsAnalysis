@@ -5,11 +5,14 @@
 #TODO
 # SETTINGS PREDELAT DO JEDNOHO LISTU, DO EXPORTU PRIDAT MOZNOST "NO"
 
+
 #----------------------------SETTINGS----------------------------------------------------------
-MONTH     = 1            
-THRESHOLD = 50           
-CATEGORY  = "zahranicni"    
+SETTINGS = list(
+MONTH     = 4,            
+THRESHOLD = 50,           
+CATEGORY  = "zahranicni",    
 EXPORT    = "HTML"
+)
 
 
 #----------------------------REQUIRED PACKAGES-------------------------------------------------
@@ -20,21 +23,23 @@ require(plyr)
 source("./functions/selectData.R")
 source("./functions/transformData.R")
 source("./functions/analyzeGroups.R")
+source("./functions/analyzeLeaders.R")
 source("./functions/exportGroups.R")
 
-#----------------------------LOAD DATA---------------------------------------------------------
-relations = read.csv(paste0("./data/relations_2015_",MONTH,".csv"))
-comments  = read.csv(paste0("./data/comments_2015_",MONTH,".csv"))
-relationsBackup = relations
-relations = relationsBackup
 
-#----------------------------SELECT AND TRANSFROM DATA-----------------------------------------
-relations = selectData ( relations, THRESHOLD, CATEGORY )
-graph     = transformData ( relations )
+    #----------------------------LOAD DATA---------------------------------------------------------
+    relations = read.csv(paste0("./data/relations_2015_",SETTINGS$MONTH,".csv"))
+    comments  = read.csv(paste0("./data/comments_2015_",SETTINGS$MONTH,".csv"))
+    relationsBackup = relations
 
-#----------------------------ANALYZE DATA------------------------------------------------------
-basicResults = analyzeGeneral ( graph, relations ,relationsBackup )
-groupResults = analyzeGroups( graph, comments, relationsBackup, MONTH )
+    #----------------------------SELECT AND TRANSFROM DATA-----------------------------------------
+    relations = selectData ( relations, SETTINGS )
+    graph     = transformData ( relations )
+    
+    #----------------------------ANALYZE DATA------------------------------------------------------
+    basicResults = analyzeGeneral ( graph, relations, relationsBackup, SETTINGS )
+    groupResults = analyzeGroups( graph, comments, relationsBackup, SETTINGS )
+    
+    #----------------------------EXPORT DATA-------------------------------------------------------
+    exportGroups( groupResults, SETTINGS )
 
-#----------------------------EXPORT DATA-------------------------------------------------------
-exportGroups( groupResults, EXPORT, MONTH, THRESHOLD, CATEGORY )

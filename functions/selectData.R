@@ -2,14 +2,14 @@
 
 
 #-----------------------------selectData------------------------------------------------
-selectData = function ( relations, threshold, category = "all" ){
+selectData = function ( relations, SETTINGS){
     #-----main function for selecting data
     
     relations = selectWithoutNA ( relations )
-    if( category != "all" )
-        relations = selectByCategory( relations, category )
+    if( SETTINGS$CATEGORY != "all" )
+        relations = selectByCategory( relations, SETTINGS$CATEGORY )
     #notice that we choose first category and then  treshold (we want only active users in given category)
-    relations = selectByThreshold( relations, threshold )
+    relations = selectByThreshold( relations, SETTINGS$THRESHOLD )
 }
 
 

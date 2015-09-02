@@ -4,10 +4,37 @@
 #------------------------transfromData----------------------------------------------
 transformData = function ( relations ){
     relations = weightPositiveRelations( relations )
+    #relations = weightRelations        ( relations )
     relations = transfromWeights       ( relations )
     graph     = transformToGraph       ( relations )
     return    = graph
 }
+
+
+#-------------------------weightedRelations---------------------------------
+weightRelations = function(relations){
+    #-----Sloučí opakované vztahy do jednoho a přidělí jim váhu podle opakování
+    relPos = relations[which(relations$positive_reaction == 1),]     #Select positive rows
+    relNeg = relations[which(relations$positive_reaction == 0),]     #Select negative rows
+    require(plyr)
+    
+    relationsWeighted = ddply(relations, .(relPos$commenting_person_id, relPos$reacting_person_id), nrow)
+    names(relationsWeighted) = c("target", "source", "weight")
+    
+    relationsWeightedN = ddply(relations, .(relNeg$commenting_person_id, relNeg$reacting_person_id), nrow)
+    names(relationsWeightedN) = c("target", "source", "weight")
+    
+    relationsWeightedN[,3] = -relationsWeightedN[,3]
+    
+    relationsWeightedAll = merge(x = relationsWeighted, y = relationsWeightedN, by = c("target","source"), all = TRUE)
+    relationsWeightedAll[is.na(relationsWeightedAll)] = 0
+    relationsWeightedAll[,3] = relationsWeightedAll[,3] + relationsWeightedAll[,4]
+    relationsWeightedAll[,4] <- NULL #drop collumn
+    names(relationsWeightedAll)[3] = "weight"
+    return = relationsWeightedAll
+    
+}
+
 
 
 #-------------------------weightedPositiveRelations---------------------------------
@@ -25,8 +52,11 @@ weightPositiveRelations = function(relations){
 transfromWeights = function(relationsW){
     #-----Upraví vztahy (divede by 10 and floor)
     relationsW[,3] = floor((relationsW[,3]/10))
-    return = relationsW[which(relationsW[,3] > 0),]
+    relationsW[which(relationsW[,3] < 0),3] = relationsW[which(relationsW[,3] < 0),3] + 1 #number less than zero are floored and we must add 1
+    relationsW = relationsW[which(relationsW[,3] != 0),]
+    return = relationsW
 }
+
 
 #------------------------transformToGraph---------------------------------
 transformToGraph = function(relations){
