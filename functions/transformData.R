@@ -2,10 +2,10 @@
 
 
 #------------------------transfromData----------------------------------------------
-transformData = function ( relations ){
+transformData = function ( relations, SETTINGS ){
     relations = weightPositiveRelations( relations )
     #relations = weightRelations        ( relations )
-    relations = transfromWeights       ( relations )
+    relations = transfromWeights       ( relations, SETTINGS )
     graph     = transformToGraph       ( relations )
     return    = graph
 }
@@ -49,9 +49,9 @@ weightPositiveRelations = function(relations){
 }
 
 #-------------------------transformWeights---------------------------------
-transfromWeights = function(relationsW){
+transfromWeights = function(relationsW, SETTINGS){
     #-----Upraví vztahy (divede by 10 and floor)
-    relationsW[,3] = floor((relationsW[,3]/10))
+    relationsW[,3] = floor((relationsW[,3]/SETTINGS$TO_DIVIDE)) #IMPORTANT HOW MANY WILL BE EDGE WEIGHT DIVIDED!!!!
     relationsW[which(relationsW[,3] < 0),3] = relationsW[which(relationsW[,3] < 0),3] + 1 #number less than zero are floored and we must add 1
     relationsW = relationsW[which(relationsW[,3] != 0),]
     return = relationsW

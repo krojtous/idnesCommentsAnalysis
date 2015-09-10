@@ -9,53 +9,25 @@ exportGroups = function( groupResults, SETTINGS ){
     
 #-----------------------------------exportGroupsHTML--------------------------------------------
 exportGroupsHTML = function( groupResults, SETTINGS ){
-    months = c(
-        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" 
-    )
+
     MONTH = SETTINGS$MONTH #for reasons of clarity of code
-    
     sink(paste0("./output/", MONTH,"_groups.html"))  
-    cat("<!doctype html>
-<HTML>
-    <HEAD>
-        <title>Results of group analysis</title>
-        <meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\">
-        <link rel=\"stylesheet\" type=\"text/css\" href=\"styles/groups.css\">
-        </HEAD>
-      <BODY>")
-    cat(paste0("
-            <h1>Group results: ", months[MONTH],"</h1>
-               "))
+    HTMLheader( "groups" , SETTINGS )
     
-    cat(paste0("
-            <ul>
-                <li>Category: ", SETTINGS$CATEGORY,"</li>
-                <li>Threshold: ", SETTINGS$THRESHOLD,"</li>",
-               "</ul>"))
-    
+    #----------------------------------DATA--------------------------------
+    cat("<div id=\"left_column\">")
     cat(paste0("<img src=\"graphs/",MONTH,"group_graph.png\" class=\"main_image\">"))
-    cat(paste0("
-<div id=\"navigation\">
-<a href=\"",MONTH,"_general.html\">General</a> |
-<a href=\"",MONTH,"_groups.html\">Groups</a> |
-<a href=\"",MONTH,"_leaders.html\">Leaders</a> |
-<a href=\"",MONTH,"_ties.html\">Ties</a> <br/>
-<a href=\"",MONTH - 1,"_groups.html\"><< Previous month</a> |   
-<a href=\"",MONTH + 1,"_groups.html\">Next month >></a>
-</div>
-"))
-    
+    cat("</div>")
     
     #description of each group
-    cat("<div id=\"group_desc\">")
+    cat("<div id=\"right_column\">")
     for(i in 1:length(groupResults)){
       exportGroupDescHTML(groupResults, i)
-      
     }
     cat("</div>")
-    cat("
-    </BODY>
-</HTML>")
+    
+    #------------------------------FOOTER------------------------------------------------
+    HTMLfooter( "groups" , SETTINGS )
     sink()
 }
 

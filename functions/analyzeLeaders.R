@@ -35,8 +35,6 @@ plot(graph,
 
 
 #-----------------------COMMENTS--------------------------------------------
-com = comments[comments$commenting_person_id == degreeNames[7],]
+com = comments[comments$commenting_person_id == degreeNames[3],]
 com = com[order(-com$positive_score),]
-com = com[1:3,c(1,5,6,8)]
-
-
+com = com[1:2,c(1,5,6,8)]

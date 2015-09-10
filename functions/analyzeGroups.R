@@ -5,7 +5,7 @@ analyzeGroups = function( graph, comments, relationsOrig, SETTINGS ){
     
     #----main function for analyzing groups
     
-    groups = findGroups( graph )
+    groups = findGroups( graph, SETTINGS )
     out = list()
     for( i in  1:length(groups )){
         out[[i]] = describeGroup( graph, groups, comments, relationsOrig, i )
@@ -13,17 +13,20 @@ analyzeGroups = function( graph, comments, relationsOrig, SETTINGS ){
     }
     
     png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "group_graph.png"))
-        drawGraph( graph, groups )
+       #drawGraph( graph, groups )
     dev.off()
     return = out
   
 }
 
 #-------------------------------------findGroups-----------------------------------------
-findGroups = function ( graph ){
+findGroups = function ( graph, SETTINGS ){
     #----finds communities in graph (various options of methods)
     #groups  = walktrap.community( graph )
-    groups  = cluster_spinglass( graph, spins = 3 ) #spins means how many groups we are looking for
+    #groups = cluster_optimal( graph ) <--- DO NOT USE, NEEDS TOO MUCH MEMORY!!!
+    #groups = cluster_fast_greedy(graph) # <--- NEEDS GRAPH WITHOUT MULTIPLPE EDGES 
+    #groups = cluster_edge_betweenness(graph)
+    groups  = cluster_spinglass( graph, spins = SETTINGS$GROUPS ) #spins means how many groups we are looking for
     
     return = groups
 }

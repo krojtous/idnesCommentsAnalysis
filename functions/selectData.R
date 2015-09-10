@@ -8,7 +8,9 @@ selectData = function ( relations, SETTINGS){
     relations = selectWithoutNA ( relations )
     if( SETTINGS$CATEGORY != "all" )
         relations = selectByCategory( relations, SETTINGS$CATEGORY )
-    #notice that we choose first category and then  treshold (we want only active users in given category)
+    if( SETTINGS$TAGS[1] != "all" )
+        relations = selectByTags( relations, SETTINGS )
+    #notice that we choose first category and tags then  treshold (we want only active users in given category)
     relations = selectByThreshold( relations, SETTINGS$THRESHOLD )
 }
 
@@ -43,3 +45,15 @@ selectByThreshold = function ( relations, threshold )
     
     return = relations
 }
+
+#-----------------------selectByTags-------------------------------------------------
+selectByTags = function( relations, tags ){
+    
+
+    a = articles[articles$tag %in% SETTINGS$TAGS,6]
+    a = unique(a)
+    
+    relations = relations[relations$article_id %in% a,] 
+    return = relations
+    }
+
