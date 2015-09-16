@@ -1,20 +1,21 @@
 #analyzeGroups.R
 
 #-------------------------------------analyzeGroups-------------------------------------
-analyzeGroups = function( graph, comments, relationsOrig, SETTINGS ){
+analyzeGroups = function( graph, comments, relations, SETTINGS ){
     
     #----main function for analyzing groups
     
     groups = findGroups( graph, SETTINGS )
     out = list()
-    for( i in  1:length(groups )){
-        out[[i]] = describeGroup( graph, groups, comments, relationsOrig, i )
-        
+    
+    
+    for( i in  1:length(groups) ){
+        out[[i]] = describeGroup( graph, groups, comments, relations, i )
     }
     
-    png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "group_graph.png"))
-       #drawGraph( graph, groups )
-    dev.off()
+    out[[ length(groups) + 1 ]] = groups
+    
+
     return = out
   
 }
@@ -22,23 +23,24 @@ analyzeGroups = function( graph, comments, relationsOrig, SETTINGS ){
 #-------------------------------------findGroups-----------------------------------------
 findGroups = function ( graph, SETTINGS ){
     #----finds communities in graph (various options of methods)
-    #groups  = walktrap.community( graph )
+    groups  = walktrap.community( graph )
     #groups = cluster_optimal( graph ) <--- DO NOT USE, NEEDS TOO MUCH MEMORY!!!
     #groups = cluster_fast_greedy(graph) # <--- NEEDS GRAPH WITHOUT MULTIPLPE EDGES 
     #groups = cluster_edge_betweenness(graph)
-    groups  = cluster_spinglass( graph, spins = SETTINGS$GROUPS ) #spins means how many groups we are looking for
-    
+    #groups  = cluster_spinglass( graph, spins = SETTINGS$GROUPS ) #spins means how many groups we are looking for
+
     return = groups
 }
 
 #-------------------------------------drawGraph------------------------------------------------
-drawGraph = function( graph, groups ){
+drawGraph = function( graph, groupResults ){
     #right colors for graph
     groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
-    V(graph)$membership =  groups$membership
+    V(graph)$membership =  groupResults[[length(groupResults)]]$membership
     V(graph)$color = groupColorEng[V(graph)$membership]
     
-    #vykresleni grafu
+
+    #draw graph
     in.deg = degree(graph,v=V(graph), mode="in")
     plot(graph,  vertex.label=NA, vertex.size=log(in.deg)*2, edge.color = "black", edge.width=E(graph)$weight/2,
          main = "Graph of relations in duscussion with groups", mark.groups = NULL)
@@ -54,6 +56,7 @@ describeGroup = function( graph, groups, comments, relationsOrig, i ){
         color    = groupColorEng[i],
         size     = sizes(groups)[ i ],
         groupSig = communitySignificanceTest( graph, groups, i ),
+        commentsDesc = commentsDesc(comments, groups, i),
         comments = list()
     )
     
@@ -105,5 +108,24 @@ communitySignificanceTest = function(graph, groups, i) {
     out.degrees  = degree(graph, vs) - in.degrees
     a = wilcox.test(in.degrees, out.degrees)
     return = a$statistic
+}
+
+#---------------------commentsDesc-------------------------------------------------------
+commentsDesc = function(comments, groups, i){
+    #----count comments of one group, all likes and dislikes which gets this group
+    vs = V(graph)[which(membership(groups) == i)]
+    com = comments[comments$commenting_person_id %in% names(vs),]
+    
+    #transfrom dislikes to integers
+    com$negative_score = gsub("−", "", com$negative_score)
+    com$negative_score = strtoi(com$negative_score)
+    
+    return = list(
+             numberComm = nrow(com),
+             numberLikes = sum(com$positive_score),
+             numberDislikes = sum(com$negative_score)
+             
+    )
+    
 }
 

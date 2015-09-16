@@ -1,18 +1,36 @@
 #selectData.R
 
 
-#-----------------------------selectData------------------------------------------------
-selectData = function ( relations, SETTINGS){
-    #-----main function for selecting data
+#-----------------------------selectrelations------------------------------------------------
+selectRelations = function ( relations, articles, SETTINGS){
+    #-----main function for selecting relations
     
     relations = selectWithoutNA ( relations )
-    if( SETTINGS$CATEGORY != "all" )
+    if( SETTINGS$CATEGORY != "all" ){
         relations = selectByCategory( relations, SETTINGS$CATEGORY )
-    if( SETTINGS$TAGS[1] != "all" )
-        relations = selectByTags( relations, SETTINGS )
+    }
+    if( SETTINGS$TAGS[1] != "all" ){
+        relations = selectByTags( relations, articles, SETTINGS )
+    }
     #notice that we choose first category and tags then  treshold (we want only active users in given category)
     relations = selectByThreshold( relations, SETTINGS$THRESHOLD )
+    return = relations
 }
+
+
+#---------------------------selectComments----------------------------------------------
+selectComments = function ( comments, articles, SETTINGS ){
+    #-----main function for selecting comments
+    if( SETTINGS$CATEGORY != "all" ){
+        #TODO
+        #relations = selectCommByCategory( relations, SETTINGS$CATEGORY )
+    }
+    if( SETTINGS$TAGS[1] != "all" ){
+        comments = selectByTags( comments, articles, SETTINGS )
+    }
+    return = comments
+}
+
 
 
 #---------------------------selectWithoutNA--------------------------------------------
@@ -47,13 +65,25 @@ selectByThreshold = function ( relations, threshold )
 }
 
 #-----------------------selectByTags-------------------------------------------------
-selectByTags = function( relations, tags ){
-    
+selectByTags = function( data, articles, SETTINGS ){
+    #----Select relations or comments (data) by tags of articles
 
     a = articles[articles$tag %in% SETTINGS$TAGS,6]
     a = unique(a)
     
-    relations = relations[relations$article_id %in% a,] 
-    return = relations
+    data = data[data$article_id %in% a,] 
+    return = data
     }
 
+#-----------------------selectByTagKrimi-------------------------------------------------
+selectByTagKrimi = function( data, articles, SETTINGS ){
+    #----Select relations or comments (data) by tags of articles
+    
+    #a = articles[articles$tag %in% SETTINGS$TAGS,6]
+    a = articles[substr(articles$tag, 1, 5) == "Krimi",6]
+    a = unique(a)
+    data = relations
+    data = data[data$article_id %in% a,]
+    comments2 = comments[comments$article_id %in% a,]
+    return = data
+}

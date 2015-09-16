@@ -21,8 +21,8 @@ exportGroupsHTML = function( groupResults, SETTINGS ){
     
     #description of each group
     cat("<div id=\"right_column\">")
-    for(i in 1:length(groupResults)){
-      exportGroupDescHTML(groupResults, i)
+    for(i in  1:(length(groupResults) - 1) ){
+        exportGroupDescHTML(groupResults, i)
     }
     cat("</div>")
     
@@ -37,8 +37,11 @@ exportGroupDescHTML = function( groupResults, group ){
         cat(paste0("<h2>", groupColorEng[group]," group</h2>\n"))  
         
         cat(paste0("<ul>
-                        <li>Size: ", groupResults[[group]]$size, "</li>\n",
-                       "<li>Wilcox test: ", groupResults[[group]]$groupSig, "</li>\n"
+                        <li>Size: ", groupResults[[group]]$size, "</li>\n
+                        <li>Number of comments: ", groupResults[[group]]$commentsDesc$numberComm , "</li>\n
+                        <li>Number of likes: ", groupResults[[group]]$commentsDesc$numberLikes , "</li>\n
+                        <li>Number of dislikes: ", groupResults[[group]]$commentsDesc$numberDislikes , "</li>\n
+                        <li>Wilcox test: ", groupResults[[group]]$groupSig, "</li>\n"
                    )
             )
         
