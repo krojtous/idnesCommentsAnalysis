@@ -41,20 +41,28 @@ exportGroupDescHTML = function( groupResults, group ){
                         <li>Number of comments: ", groupResults[[group]]$commentsDesc$numberComm , "</li>\n
                         <li>Number of likes: ", groupResults[[group]]$commentsDesc$numberLikes , "</li>\n
                         <li>Number of dislikes: ", groupResults[[group]]$commentsDesc$numberDislikes , "</li>\n
-                        <li>Wilcox test: ", groupResults[[group]]$groupSig, "</li>\n"
+                        <li>Wilcox test: ", groupResults[[group]]$groupSig, "</li>
+                        <li>Density: ", round(groupResults[[group]]$density, digits = 2), "</li>\n
+                        <li>Centrality: ", round(groupResults[[group]]$centrality, digits = 2), " (degree)</li>\n"
                    )
             )
         
-        cat("<li>Typical comments</li>
-            <ul>\n")
+        #Typical comments export
         comments = groupResults[[group]]$comments
-        for( i in 1:length(comments) ){
-            cat(paste0(
-                "<li>",comments[[i]]$text, "</li>",
-                "<ul>
-                    <li class=\"article\">Article: ", comments[[i]]$article, " (", comments[[i]]$date,")</li>
-                </ul>\n\n"))
+        
+        if( length( comments ) > 0 ){
+            cat("<li>Typical comments</li>
+                <ul>\n")
             
+            for( i in 1:length(comments) ){
+                cat(paste0(
+                    "<li>",comments[[i]]$text, "</li>",
+                    "<ul>
+                        <li class=\"article\">Article: ", comments[[i]]$article, " (", comments[[i]]$date,")</li>
+                    </ul>\n\n"))
+                
+            }
+            cat("</ul>\n")
         }
-        cat("</ul>\n</ul>\n")
+        cat("</ul>\n") 
 }

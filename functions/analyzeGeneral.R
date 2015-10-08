@@ -1,15 +1,64 @@
-
-
 #---------------------basicStats---------------------------
-analyzeGeneral = function( graph, relations, relationsBackup, SETTINGS ){
+analyzeGeneral = function( graph, 
+                           relations, 
+                           comments, 
+                           articles, 
+                           commentsBackup, 
+                           relationsBackup, 
+                           articlesBackup, 
+                           SETTINGS ){
     #----Zobrazi zakladni statistiky (počet komentářů, užeivatelů a vztahů) 
     #----a hsitogram počtu vztahů (log10)
     relations = relations[!is.na(relations$commenting_person_id),]  #Remove rows with NA
-    #Basic statistics
-    V  = length(V(graph))
-    E  = length(E(graph))
-    density = graph.density(graph)
     
+    #stats before selecting data
+    beforeSelect = statsBeforeSelect(articlesBackup, commentsBackup, relationsBackup)
+    
+    #stats after selecting data
+    afterSelect = statsAfterSelect(graph, comments, articles, relations, SETTINGS)
+    
+    #draw grpahs
+    drawBasicGraphs(graph, relationsBackup, relations, SETTINGS)
+    
+    return = list(
+        afterSelect = afterSelect,
+        beforeSelect = beforeSelect
+    )
+}
+
+
+#-----------------------statsBeforeSelect-----------------------------
+statsBeforeSelect = function(articlesBackup, commentsBackup, relationsBackup){
+    
+    
+    return = list(
+    commentsN   = nrow(commentsBackup),
+    relationsN  = nrow(relationsBackup),
+    articlesN   = length( unique(articlesBackup[,6]) ),
+    usersN      = length( unique(c(commentsBackup[,2], relationsBackup[,8])) )
+    )
+    
+}
+
+
+#---------------------statsAfterSelect----------------------------------
+statsAfterSelect = function(graph, comments, articles, relations, SETTINGS){
+    
+    
+    return = list(
+        usersN      = length(V(graph)),
+        E           = length(E(graph)),
+        density     = graph.density(graph),
+        commentsN   = nrow(comments),
+        relationsN  = nrow(relations),
+        articlesN   = length ( unique (articles[articles$tag %in% SETTINGS$TAGS,6] ) )
+    )
+}
+
+
+#-------------------drawBasicGraphs-------------------------------------
+drawBasicGraphs = function(graph, relationsBackup, relations, SETTINGS){
+    #graphs - MOVE IN SEPERATE FUNCTION
     png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "general_graph1.png"))
     plot(degree.distribution(graph), xlab="node degree", main="After transfromation")
     lines(degree.distribution(graph))
@@ -30,10 +79,4 @@ analyzeGeneral = function( graph, relations, relationsBackup, SETTINGS ){
          main = paste("Selected data data"),
          xlab = "node degree")
     dev.off()
-    
-    return = list(
-        V  = V,
-        E  = E,
-        density     = density
-    )
 }

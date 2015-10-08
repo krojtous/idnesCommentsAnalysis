@@ -47,12 +47,11 @@ weightPositiveRelations = function(relations){
     names(relationsWeighted) = c("target", "source", "weight")
     return = relationsWeighted
 }
-
 #-------------------------transformWeights---------------------------------
 transfromWeights = function(relationsW, SETTINGS){
     #-----Upraví vztahy (divede by 10 and floor)
     relationsW[,3] = floor((relationsW[,3]/SETTINGS$TO_DIVIDE)) #IMPORTANT HOW MANY WILL BE EDGE WEIGHT DIVIDED!!!!
-    relationsW[which(relationsW[,3] < 0),3] = relationsW[which(relationsW[,3] < 0),3] + 1 #number less than zero are floored and we must add 1
+    #relationsW[which(relationsW[,3] < 0),3] = relationsW[which(relationsW[,3] < 0),3] + 1 #number less than zero are floored and we must add 1
     relationsW = relationsW[which(relationsW[,3] != 0),]
     return = relationsW
 }

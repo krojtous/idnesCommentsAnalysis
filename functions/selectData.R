@@ -1,7 +1,7 @@
 #selectData.R
 
 
-#-----------------------------selectrelations------------------------------------------------
+#-----------------------------selectRelations------------------------------------------------
 selectRelations = function ( relations, articles, SETTINGS){
     #-----main function for selecting relations
     
@@ -21,6 +21,7 @@ selectRelations = function ( relations, articles, SETTINGS){
 #---------------------------selectComments----------------------------------------------
 selectComments = function ( comments, articles, SETTINGS ){
     #-----main function for selecting comments
+    comments = selectCommWithoutNA(comments)
     if( SETTINGS$CATEGORY != "all" ){
         #TODO
         #relations = selectCommByCategory( relations, SETTINGS$CATEGORY )
@@ -31,6 +32,13 @@ selectComments = function ( comments, articles, SETTINGS ){
     return = comments
 }
 
+
+#---------------------------selectCommWithoutNA--------------------------------------------
+selectCommWithoutNA = function ( comments )
+{
+    #---- Remove rows with NA  
+    return = comments[!is.na(comments$positive_score),]  
+}
 
 
 #---------------------------selectWithoutNA--------------------------------------------
@@ -69,11 +77,13 @@ selectByTags = function( data, articles, SETTINGS ){
     #----Select relations or comments (data) by tags of articles
 
     a = articles[articles$tag %in% SETTINGS$TAGS,6]
-    a = unique(a)
     
+    a = unique(a)
     data = data[data$article_id %in% a,] 
     return = data
     }
+
+
 
 #-----------------------selectByTagKrimi-------------------------------------------------
 selectByTagKrimi = function( data, articles, SETTINGS ){

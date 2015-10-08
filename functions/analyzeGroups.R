@@ -8,7 +8,6 @@ analyzeGroups = function( graph, comments, relations, SETTINGS ){
     groups = findGroups( graph, SETTINGS )
     out = list()
     
-    
     for( i in  1:length(groups) ){
         out[[i]] = describeGroup( graph, groups, comments, relations, i )
     }
@@ -23,11 +22,13 @@ analyzeGroups = function( graph, comments, relations, SETTINGS ){
 #-------------------------------------findGroups-----------------------------------------
 findGroups = function ( graph, SETTINGS ){
     #----finds communities in graph (various options of methods)
-    groups  = walktrap.community( graph )
+    
     #groups = cluster_optimal( graph ) <--- DO NOT USE, NEEDS TOO MUCH MEMORY!!!
     #groups = cluster_fast_greedy(graph) # <--- NEEDS GRAPH WITHOUT MULTIPLPE EDGES 
     #groups = cluster_edge_betweenness(graph)
-    #groups  = cluster_spinglass( graph, spins = SETTINGS$GROUPS ) #spins means how many groups we are looking for
+     #spins means how many groups we are looking for
+    if( SETTINGS$GROUP_ALG == 1) groups  = walktrap.community( graph )
+    if( SETTINGS$GROUP_ALG == 2) groups  = cluster_spinglass( graph, spins = SETTINGS$GROUPS )
 
     return = groups
 }
@@ -43,7 +44,7 @@ drawGraph = function( graph, groupResults ){
     #draw graph
     in.deg = degree(graph,v=V(graph), mode="in")
     plot(graph,  vertex.label=NA, vertex.size=log(in.deg)*2, edge.color = "black", edge.width=E(graph)$weight/2,
-         main = "Graph of relations in duscussion with groups", mark.groups = NULL)
+          mark.groups = NULL)
     
 }
 
@@ -52,11 +53,18 @@ describeGroup = function( graph, groups, comments, relationsOrig, i ){
     
     #----function which describe one group in basic stats (in degree, out degree, typical commnets, number of vertices...)
     groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
+    
+    #make a subgraph from group
+    subg = induced.subgraph(graph, which(membership(groups) == i))
+    
+    
     out = list(
         color    = groupColorEng[i],
         size     = sizes(groups)[ i ],
         groupSig = communitySignificanceTest( graph, groups, i ),
-        commentsDesc = commentsDesc(comments, groups, i),
+        density  = graph.density(subg, loops=FALSE),
+        centrality = centr_degree(subg)$centralization,
+        commentsDesc = commentsDesc(graph, comments, groups, i),
         comments = list()
     )
     
@@ -89,13 +97,18 @@ selectTypicalComments = function(wc, relations, group, number = 3){ #Puvodne se 
     membership = as.matrix(membership(wc))
     membership = membership[which(membership[,1] == group),] 
     relationsMember = relations[which(relations$reacting_person_id %in% row.names(as.matrix(membership))),]
-    relationsMember = relationsMember[which(relations$positive_reaction == 1),] 
+    relationsMember = relationsMember[which(relationsMember$positive_reaction == 1),] 
+    #relationsMember = relationsMember[which(relations$positive_reaction == 1),] 
     
     #Získání ID komenářů s nejvíce lajky
     commentTable = data.frame(table(relationsMember$comment_id))
-    colnames(commentTable) = c("ID","Fre")
-    commentTable = commentTable[order(-commentTable$Fre),]
-    return = commentTable[1:number ,1]
+    pom = nrow(commentTable)
+    if(nrow(commentTable) == 0) return = numeric() #group didnt comment anything - just gives and gets likes
+    else{
+        colnames(commentTable) = c("ID","Fre")
+        commentTable = commentTable[order(-commentTable$Fre),]
+        return = commentTable[1:number ,1]
+    }
     
 }
 
@@ -111,7 +124,7 @@ communitySignificanceTest = function(graph, groups, i) {
 }
 
 #---------------------commentsDesc-------------------------------------------------------
-commentsDesc = function(comments, groups, i){
+commentsDesc = function(graph, comments, groups, i){
     #----count comments of one group, all likes and dislikes which gets this group
     vs = V(graph)[which(membership(groups) == i)]
     com = comments[comments$commenting_person_id %in% names(vs),]

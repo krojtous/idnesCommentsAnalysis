@@ -4,14 +4,17 @@
 
 
 #TODO
-# SETTINGS PREDELAT DO JEDNOHO LISTU, DO EXPORTU PRIDAT MOZNOST "NO"
+# DO EXPORTU PRIDAT MOZNOST "NO"
 
 #c("Islámský stát", "Příliv uprchlíků do Evropy", "Terorismus", "Terorismus, teroristické útoky", "Islám", "Uprchlíci")
 #Code for frequency of tags
+articles  = read.csv (paste0("./data/articles_2015_6.csv"))
 tags = table(articles$tag)
 tags = sort(tags, decreasing = TRUE)
-tags[1:10]
+tags[1:30]
 art = articles[substr(articles$tag, 1, 5) == "Krimi",]
+
+#Boris Němcov, Evropa, Evropská unie, Interfax, Krize na Ukrajině, Krym, NATO, Vladimir Putin
 
 length(unique(articles$article_id))
 length(unique(art$article_id))
@@ -22,12 +25,14 @@ MONTH     = 8,
 THRESHOLD = 0,           
 #CATEGORY = "zahranicni",
 CATEGORY  = "all",
-TO_DIVIDE = 10,#transformation of edges weight
+TO_DIVIDE = 7,#transformation of edges weight
 #TAGS = "all", #POZOR TAGY UPRAVENY NA KRIMI
-TAGS = c("Islámský stát", "Příli uprchlíků do Evropy", "Terorismus", "Terorismus, teroristické útoky", "Islám", "Uprchlíci"),
+TAGS = c("Islámský stát", "Příliv uprchlíků do Evropy", "Terorismus", "Terorismus, teroristické útoky",
+         "Islám", "Uprchlíci", "Útok na francouzský týdeník"),
 #TAGS  = "Miloš Zeman",
 #TAGS = "Příliv uprchlíků do Evropy",
 GROUPS = 2, #How many groups will be indetified in data
+GROUP_ALG = 1, #1 - random walks, 2 - spinglass (exact number of groups)
 EXPORT    = "HTML"
 )
 
@@ -46,7 +51,11 @@ source("./functions/exportGroups.R")
 source("./functions/exportGeneral.R")
 source("./functions/exportHTML.R")
 
-
+for( i in  1:8){
+    SETTINGS$MONTH = i
+    main(SETTINGS)
+}
+main(SETTINGS)
 main = function(SETTINGS){
     #----------------------------LOAD DATA---------------------------------------------------------
     relations = read.csv (paste0("./data/relations_2015_", SETTINGS$MONTH,".csv"))
@@ -54,7 +63,9 @@ main = function(SETTINGS){
     articles  = read.csv (paste0("./data/articles_2015_", SETTINGS$MONTH,".csv"))
     relationsBackup = relations
     commentsBackup  = comments
+    articlesBackup = articles
     
+    articles = articlesBackup
     comments = commentsBackup
     relations = relationsBackup
     #----------------------------SELECT AND TRANSFROM DATA-----------------------------------------
@@ -63,7 +74,7 @@ main = function(SETTINGS){
     graph     = transformData ( relations, SETTINGS )
     
     #----------------------------ANALYZE DATA------------------------------------------------------
-    generalResults = analyzeGeneral( graph, relations, relationsBackup, SETTINGS )
+    generalResults = analyzeGeneral( graph, relations, comments, articles, commentsBackup, relationsBackup, articlesBackup, SETTINGS )
     #list of each group description, last item of list is a list of group membership
     groupResults   = analyzeGroups ( graph, comments, relations, SETTINGS )
     
@@ -71,33 +82,40 @@ main = function(SETTINGS){
     exportGeneral( generalResults, SETTINGS )
     exportGroups ( groupResults, SETTINGS )
     
-    png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "group_graph.png"))
+    png(width = 800, height = 800, filename=paste0("./output/graphs/", SETTINGS$MONTH, "group_graph.png"))
         drawGraph( graph, groupResults )
     dev.off()
 }
 
+V(subg)
+
+#--------inverze vah pro výpočet--------------------------
+E(graph)$weight = backup
+E(graph)$weight = mean(E(graph)$weight)/E(graph)$weight
+
+#--------počítání dalších charakteristik------------------
+members = groupResults[[length(groupResults)]]
+subg = induced.subgraph(graph, which(membership(members) == 1))
+graph.density(subg, loops=FALSE)
+centr_degree(subg)$centralization
+centr_clo(subg, mode="all")$centralization
+centr_eigen(subg, directed=FALSE)$centralization
 
 
 
+#---------------------analýza diskurz---------------------------------
 
-#----------------------------analysis of group with other tags------------------------------
-b = articles[(articles$tag %in% SETTINGS$TAGS),6]
-b = as.character(b)
-b = unique(b)
-
-
-a = articles[!(articles$article_id %in% b),6]
-a = as.character(a)
-a = unique(a)
-
-data = relationsBackup[relationsBackup$article_id %in% a,] 
-data = data[data$category == "zahranicni",] 
-
-
-out = list()
-for( i in  1:length( groups )){
-    out[[i]] = describeGroup( graph, groups, comments, data, i )
+for( i in  1:8){
+    SETTINGS$MONTH = i
+    discourseAnalyze(SETTINGS)
 }
-out[[3]]
 
-articles[articles$article_name == "Zeman se při návštěvě Číny setká s ruským prezidentem Putinem",]
+discourseAnalyze = function( SETTINGS ){
+    comments  = read.csv (paste0("./data/comments_2015_", SETTINGS$MONTH,".csv"))
+    cat(SETTINGS$MONTH)
+    cat("\n")
+    cat(length( grep("uprchlí", comments[,1])))
+    cat("\n")
+    cat(length(grep("migrant", comments[,1])))
+    cat("\n\n")
+}
