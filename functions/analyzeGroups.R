@@ -142,3 +142,26 @@ commentsDesc = function(graph, comments, groups, i){
     
 }
 
+#------------------------------groupsOpinionProximity---------------------------------
+groupsOpinionProximity = function(graph, comments, groups, i){
+    groups = groupResults[length(groupResults)]
+    for(i in c(1,2,3,4,8)){
+           
+        for(j in c(1,2,3,4,8)){
+        vs1 = groups[[1]][[i]]
+        vs2 = groups[[1]][[j]]
+        
+        rel = relationsBackup[relationsBackup$positive_reaction == 1,]
+        rel = rel[rel$commenting_person_id %in% vs2, ]
+        rel = rel[rel$reacting_person_id %in% vs1, ]
+        pos1 = nrow(rel)
+        
+        rel = relationsBackup[relationsBackup$positive_reaction == 0,]
+        rel = rel[rel$commenting_person_id %in% vs2, ]
+        rel = rel[rel$reacting_person_id %in% vs1, ]
+        neg1 = nrow(rel)
+        proximity =  (pos1- neg1) / (length(vs1) * length(vs1))
+       cat(paste(i," -> ", j, ": ", round(proximity, digits = 2),"\n"))
+        }
+    }
+}
