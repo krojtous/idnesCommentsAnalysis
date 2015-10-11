@@ -14,24 +14,24 @@ tags = sort(tags, decreasing = TRUE)
 tags[1:30]
 art = articles[substr(articles$tag, 1, 5) == "Krimi",]
 
-#Boris Němcov, Evropa, Evropská unie, Interfax, Krize na Ukrajině, Krym, NATO, Vladimir Putin
+#Boris Němcov, Interfax, Krize na Ukrajině, Krym, NATO, Vladimir Putin
 
 length(unique(articles$article_id))
 length(unique(art$article_id))
 
 #----------------------------SETTINGS----------------------------------------------------------
 SETTINGS = list(
-MONTH     = 8,            
+MONTH     = 6,            
 THRESHOLD = 0,           
-#CATEGORY = "zahranicni",
-CATEGORY  = "all",
+CATEGORY = "zahranicni",
+#CATEGORY  = "all",
 TO_DIVIDE = 7,#transformation of edges weight
-#TAGS = "all", #POZOR TAGY UPRAVENY NA KRIMI
-TAGS = c("Islámský stát", "Příliv uprchlíků do Evropy", "Terorismus", "Terorismus, teroristické útoky",
-         "Islám", "Uprchlíci", "Útok na francouzský týdeník"),
+TAGS = "all", #POZOR TAGY UPRAVENY NA KRIMI
+#TAGS = c("Islámský stát", "Příliv uprchlíků do Evropy", "Terorismus", "Terorismus, teroristické útoky",
+#         "Islám", "Uprchlíci", "Útok na francouzský týdeník"),
 #TAGS  = "Miloš Zeman",
 #TAGS = "Příliv uprchlíků do Evropy",
-GROUPS = 2, #How many groups will be indetified in data
+GROUPS = 3, #How many groups will be indetified in data
 GROUP_ALG = 1, #1 - random walks, 2 - spinglass (exact number of groups)
 EXPORT    = "HTML"
 )
@@ -88,7 +88,7 @@ main = function(SETTINGS){
 }
 
 V(subg)
-
+groupResults[[2]]
 #--------inverze vah pro výpočet--------------------------
 E(graph)$weight = backup
 E(graph)$weight = mean(E(graph)$weight)/E(graph)$weight
@@ -103,7 +103,7 @@ centr_eigen(subg, directed=FALSE)$centralization
 
 
 
-#---------------------analýza diskurz---------------------------------
+#---------------------analýza diskurzu---------------------------------
 
 for( i in  1:8){
     SETTINGS$MONTH = i

@@ -37,6 +37,7 @@ findGroups = function ( graph, SETTINGS ){
 drawGraph = function( graph, groupResults ){
     #right colors for graph
     groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
+    #groupColorEng   = c("blue","limegreen","chocolate4", "red2", "white", "white", "white", "maroon1", "white")
     V(graph)$membership =  groupResults[[length(groupResults)]]$membership
     V(graph)$color = groupColorEng[V(graph)$membership]
     
@@ -145,9 +146,15 @@ commentsDesc = function(graph, comments, groups, i){
 #------------------------------groupsOpinionProximity---------------------------------
 groupsOpinionProximity = function(graph, comments, groups, i){
     groups = groupResults[length(groupResults)]
-    for(i in c(1,2,3,4,8)){
+    groupsNumber = c(1:4)
+    C = matrix( 
+        c(rep(0, length(groupsNumber)*length(groupsNumber) )), 
+        nrow=length(groupsNumber), 
+        ncol=length(groupsNumber)) 
+    
+    for(i in groupsNumber){
            
-        for(j in c(1,2,3,4,8)){
+        for(j in groupsNumber){
         vs1 = groups[[1]][[i]]
         vs2 = groups[[1]][[j]]
         
@@ -160,8 +167,15 @@ groupsOpinionProximity = function(graph, comments, groups, i){
         rel = rel[rel$commenting_person_id %in% vs2, ]
         rel = rel[rel$reacting_person_id %in% vs1, ]
         neg1 = nrow(rel)
-        proximity =  (pos1- neg1) / (length(vs1) * length(vs1))
-       cat(paste(i," -> ", j, ": ", round(proximity, digits = 2),"\n"))
+        
+        
+        nComm = nrow(commentsBackup[commentsBackup$commenting_person_id %in% vs2,])
+        proximity =  (pos1 - neg1) / ( length(vs1) * nComm ) * 1000
+        #cat(paste(i," -> ", j, ": ", round(proximity, digits = 2),"\n"))
+        C[i, j] = round(proximity, digits = 2)
         }
     }
+    c2 = data.frame(C)
 }
+
+
