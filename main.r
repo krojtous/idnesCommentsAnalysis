@@ -21,7 +21,7 @@ length(unique(art$article_id))
 
 #----------------------------SETTINGS----------------------------------------------------------
 SETTINGS = list(
-MONTH     = 6,            
+MONTH     = 3,            
 THRESHOLD = 0,           
 CATEGORY = "zahranicni",
 #CATEGORY  = "all",
@@ -83,9 +83,21 @@ main = function(SETTINGS){
     exportGroups ( groupResults, SETTINGS )
     
     png(width = 800, height = 800, filename=paste0("./output/graphs/", SETTINGS$MONTH, "group_graph.png"))
-        drawGraph( graph, groupResults )
+       drawGraph( graph, groupResults )
     dev.off()
+    #png(width = 2000, height = 2000, filename="graf-june-better_resolution.png")
+    #   drawGraph( graph, groupResults )
+    #dev.off()
+    #setEPS()
+    #postscript("graf-june2.eps",width=10,height=10)
+    #    drawGraph( graph, groupResults )
+    #dev.off()
+    #svg("graf-june2.svg",width=10,height=10)
+     #   drawGraph( graph, groupResults )
+    #dev.off()
 }
+
+
 
 V(subg)
 groupResults[[2]]
