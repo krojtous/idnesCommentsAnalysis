@@ -21,9 +21,11 @@ exportGroupsHTML = function( groupResults, SETTINGS ){
     
     #description of each group
     cat("<div id=\"right_column\">")
-    for(i in  1:(length(groupResults) - 1) ){
+    for(i in  1:(length(groupResults) - 2) ){
         exportGroupDescHTML(groupResults, i)
     }
+    #Description of merged too small groups 
+    exportSmallGroupDescHTML(groupResults, length(groupResults) - 1, SETTINGS)
     cat("</div>")
     
     #------------------------------FOOTER------------------------------------------------
@@ -65,4 +67,19 @@ exportGroupDescHTML = function( groupResults, group ){
             cat("</ul>\n")
         }
         cat("</ul>\n") 
+}
+
+#------------------------------------exportSmallGroupDescHTML----------------------------------
+exportSmallGroupDescHTML = function( groupResults, group, SETTINGS ){
+    groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
+    cat(paste0("<h2> Groups smaller than " , SETTINGS$SIZE_OF_GROUP, " (",groupColorEng[group],")</h2>\n"))  
+    
+    cat(paste0("<ul>
+               <li>Size: ", groupResults[[group]]$size, "</li>\n
+               <li>Number of comments: ", groupResults[[group]]$commentsDesc$numberComm , "</li>\n
+               <li>Number of likes: ", groupResults[[group]]$commentsDesc$numberLikes , "</li>\n
+               <li>Number of dislikes: ", groupResults[[group]]$commentsDesc$numberDislikes , "</li>\n"
+                   )
+            )
+        
 }

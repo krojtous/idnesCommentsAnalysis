@@ -6,8 +6,12 @@ analyzeGroups = function( graph, comments, relations, SETTINGS ){
     #----main function for analyzing groups
     
     groups = findGroups( graph, SETTINGS )
-    out = list()
     
+    #remove too small groups
+    groups = mergingSmallGroups( groups, SETTINGS )
+    
+    #description of each group
+    out = list()
     for( i in  1:length(groups) ){
         out[[i]] = describeGroup( graph, groups, comments, relations, i )
     }
@@ -73,7 +77,7 @@ describeGroup = function( graph, groups, comments, relationsOrig, i ){
     )
     
     new_id = 1
-    for(comment_id in selectTypicalComments(groups, relationsOrig, i, 3)){
+    for(comment_id in selectTypicalComments(groups, relationsOrig, i, 10)){
         out$comments[[new_id]] = list()
         out$comments[[new_id]]$text = paste(comments[which(comments$comment_id == comment_id),1]) #paste is here to conversion from factor to text
         out$comments[[new_id]]$article = paste(comments[which(comments$comment_id == comment_id),5])
@@ -179,6 +183,27 @@ groupsOpinionProximity = function(graph, comments, groups, i){
         }
     }
     c2 = data.frame(C)
+}
+
+#------------------------------mergingSmallGroups---------------------------------
+mergingSmallGroups = function( groups, SETTINGS){
+    len = length(groups)
+    groupsTmp = groups$membership
+    for( i in  1:len ){
+        if ( length(groupsTmp[ groupsTmp == i ]) < SETTINGS$SIZE_OF_GROUP){
+            groupsTmp[ groupsTmp == i ] = 999
+        }
+    }
+    
+    #rename groups to make sequence of numbers
+    n = 1
+    for( i in sort.int(c(unique(groupsTmp))) ){
+            groupsTmp[ groupsTmp == i] = n 
+            n = n + 1
+    }
+    table(groupsTmp)
+    groups$membership = groupsTmp
+    return = groups
 }
 
 
