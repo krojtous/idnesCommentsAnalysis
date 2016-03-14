@@ -1,6 +1,6 @@
 #discourseAnalysis.R
 
-for( i in  1:8){
+for( i in  11:12){
     SETTINGS$MONTH = i
     discourseAnalyze(SETTINGS)
 }

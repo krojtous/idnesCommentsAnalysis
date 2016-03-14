@@ -11,7 +11,7 @@ exportGroups = function( groupResults, SETTINGS ){
 exportGroupsHTML = function( groupResults, SETTINGS ){
 
     MONTH = SETTINGS$MONTH #for reasons of clarity of code
-    sink(paste0("./output/", MONTH,"_groups.html"))  
+    sink(paste0("./output/", SETTINGS$YEAR,"/", MONTH,"_groups.html"))  
     HTMLheader( "groups" , SETTINGS )
     
     #----------------------------------DATA--------------------------------
@@ -22,7 +22,7 @@ exportGroupsHTML = function( groupResults, SETTINGS ){
     #description of each group
     cat("<div id=\"right_column\">")
     for(i in  1:(length(groupResults) - 2) ){
-        exportGroupDescHTML(groupResults, i)
+        exportGroupDescHTML(groupResults, i, SETTINGS)
     }
     #Description of merged too small groups 
     exportSmallGroupDescHTML(groupResults, length(groupResults) - 1, SETTINGS)
@@ -34,8 +34,8 @@ exportGroupsHTML = function( groupResults, SETTINGS ){
 }
 
 #------------------------------------exportGroupDescHTML----------------------------------
-exportGroupDescHTML = function( groupResults, group ){
-        groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
+exportGroupDescHTML = function( groupResults, group, SETTINGS ){
+        groupColorEng   = SETTINGS$GROUP_COLORS
         cat(paste0("<h2>", groupColorEng[group]," group</h2>\n"))  
         
         cat(paste0("<ul>
@@ -71,7 +71,7 @@ exportGroupDescHTML = function( groupResults, group ){
 
 #------------------------------------exportSmallGroupDescHTML----------------------------------
 exportSmallGroupDescHTML = function( groupResults, group, SETTINGS ){
-    groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
+    groupColorEng   = SETTINGS$GROUP_COLORS
     cat(paste0("<h2> Groups smaller than " , SETTINGS$SIZE_OF_GROUP, " (",groupColorEng[group],")</h2>\n"))  
     
     cat(paste0("<ul>

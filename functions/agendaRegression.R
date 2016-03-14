@@ -1,11 +1,11 @@
 
 articlesAll = data.frame()
 commentsAll = data.frame()
-for( i in  1:10 ){
+for( i in  1:12 ){
     comments  = read.csv (paste0("./data/comments_2015_", i,".csv"))
     articles  = read.csv (paste0("./data/articles_2015_", i,".csv"))
     articles = articles[articles$tag %in% c("Islámský stát", "Příliv uprchlíků do Evropy", "Terorismus", "Terorismus, teroristické útoky",
-                                                   "Islám", "Uprchlíci", "Útok na francouzský týdeník"), c(1,6)]
+                                                   "Islám", "Uprchlíci", "Útok na francouzský týdeník", "Situace po teroristických útocích v Paříži"), c(1,6)]
     articles = unique(articles)
     comments = comments[comments$article_id %in% as.vector(articles[,2]),]
     articlesAll = rbind(articlesAll, articles)

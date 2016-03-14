@@ -2,18 +2,32 @@
 
 #-------------------------------------analyzeGroups-------------------------------------
 analyzeGroups = function( graph, comments, relations, SETTINGS ){
-    
     #----main function for analyzing groups
     
-    groups = findGroups( graph, SETTINGS )
+    graphPath = paste0("./data/groups/",
+                       SETTINGS$MONTH, "_",
+                       SETTINGS$THRESHOLD,"_", 
+                       SETTINGS$CATEGORY,"_",
+                       SETTINGS$TO_DIVIDE,"(",
+                       paste(SETTINGS$TAGS, collapse = '-'),"_",
+                       SETTINGS$SIZE_OF_GROUP,"_",
+                       SETTINGS$TO_DIVIDE,"_",
+                       SETTINGS$TO_DIVIDE,"_",
+                       ")groups.txt")
     
-    #remove too small groups
-    groups = mergingSmallGroups( groups, SETTINGS )
+    
+    if( file.exists(graphPath)){
+        return = read.graph(graphPath, "ncol")
+    } else{ 
+        groups = findGroups( graph, SETTINGS )
+        #remove too small groups
+        groups = mergingSmallGroups( groups, SETTINGS )
+    }
     
     #description of each group
     out = list()
     for( i in  1:length(groups) ){
-        out[[i]] = describeGroup( graph, groups, comments, relations, i )
+        out[[i]] = describeGroup( graph, groups, comments, relations, i, SETTINGS )
     }
     
     out[[ length(groups) + 1 ]] = groups
@@ -37,30 +51,12 @@ findGroups = function ( graph, SETTINGS ){
     return = groups
 }
 
-#-------------------------------------drawGraph------------------------------------------------
-drawGraph = function( graph, groupResults ){
-    #right colors for graph
-    groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
-    #groupColorEng   = c("blue","limegreen","chocolate4", "red2", "white", "white", "white", "maroon1", "white")
-    #groupColorEng   = c("lightslateblue","lightgreen","lightgoldenrod3", "tomato", "white", "white", "white", "orchid1", "white")
-    #groupColorEng   = c(rgb(1, 0.709, 0.423),rgb(0.6, 0.831, 0.180),rgb(0.733, 0.886, 0.447), rgb(1, 1, 0.501), "white", "white", "white", rgb(1, 0.502, 0.255), "white")
-    
-    V(graph)$membership =  groupResults[[length(groupResults)]]$membership
-    V(graph)$color = groupColorEng[V(graph)$membership]
-    
-
-    #draw graph
-    in.deg = degree(graph,v=V(graph), mode="in")
-    plot(graph,  vertex.label=NA, vertex.size=log(in.deg)*2, edge.color = "black", edge.width=E(graph)$weight/2,
-          mark.groups = NULL)
-    
-}
 
 #-------------------------------------describeGroup-------------------------------------------
-describeGroup = function( graph, groups, comments, relationsOrig, i ){
+describeGroup = function( graph, groups, comments, relationsOrig, i, SETTINGS ){
     
     #----function which describe one group in basic stats (in degree, out degree, typical commnets, number of vertices...)
-    groupColorEng   = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white")
+    groupColorEng   = SETTINGS$GROUP_COLORS
     
     #make a subgraph from group
     subg = induced.subgraph(graph, which(membership(groups) == i))
@@ -77,7 +73,7 @@ describeGroup = function( graph, groups, comments, relationsOrig, i ){
     )
     
     new_id = 1
-    for(comment_id in selectTypicalComments(groups, relationsOrig, i, 10)){
+    for(comment_id in selectTypicalComments(groups, relationsOrig, i, 5)){
         out$comments[[new_id]] = list()
         out$comments[[new_id]]$text = paste(comments[which(comments$comment_id == comment_id),1]) #paste is here to conversion from factor to text
         out$comments[[new_id]]$article = paste(comments[which(comments$comment_id == comment_id),5])

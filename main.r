@@ -1,36 +1,11 @@
 
 #main.r
 #script loads, select, analyze and analyze data for one dataset (month)
-
-#----------------------------SETTINGS----------------------------------------------------------
-SETTINGS = list(
-#---SELECT AND TRANSFORMATION DATA SETTINGS
-    MONTH     = 10,            
-    THRESHOLD = 0,           
-    CATEGORY = "zahranicni",
-    #CATEGORY  = "all",
-    TO_DIVIDE = 7,#transformation of edges weight
-    TAGS = "all", #POZOR TAGY UPRAVENY NA KRIMI
-    #TAGS = c("Islámský stát", "Příliv uprchlíků do Evropy", "Terorismus", "Terorismus, teroristické útoky",
-    #         "Islám", "Uprchlíci", "Útok na francouzský týdeník"),
-    #TAGS  = "Miloš Zeman",
-    #TAGS = "Příliv uprchlíků do Evropy",
-
-#---CLUSTERING SETTINGS
-    SIZE_OF_GROUP = 5, #how big should be the smallest analzyed subgroup
-    GROUPS = 3, #How many groups will be indetified in data
-    GROUP_ALG = 1, #1 - random walks, 2 - spinglass (exact number of groups)
-    GROUP_COLORS = c("red","green","blue", "orange", "grey", "brown", "purple", "black", "white"),
-
-#---EXPORT SETTINGS
-    EXPORT    = "HTML"
-)
-
-
-
 #-----------------------------MAIN FUNCTION--------------------------------------------------------
 
+
 main = function(SETTINGS){
+    source("./settings.r")
     #----------------------------REQUIRED PACKAGES-------------------------------------------------
     require(igraph)
     require(plyr)
@@ -44,18 +19,16 @@ main = function(SETTINGS){
     source("./functions/exportGroups.R")
     source("./functions/exportGeneral.R")
     source("./functions/exportHTML.R")
+    source("./functions/drawGraph.R")
+    source("./functions/cacheData.R")
     
     #----------------------------LOAD DATA---------------------------------------------------------
-    relations = read.csv (paste0("./data/relations_2015_", SETTINGS$MONTH,".csv"))
-    comments  = read.csv (paste0("./data/comments_2015_", SETTINGS$MONTH,".csv"))
-    articles  = read.csv (paste0("./data/articles_2015_", SETTINGS$MONTH,".csv"))
+    relations = read.csv (paste0("./data/",SETTINGS$YEAR,"/relations_",SETTINGS$YEAR,"_", SETTINGS$MONTH,".csv"))
+    comments  = read.csv (paste0("./data/",SETTINGS$YEAR,"/comments_",SETTINGS$YEAR,"_", SETTINGS$MONTH,".csv"))
+    articles  = read.csv (paste0("./data/",SETTINGS$YEAR,"/articles_",SETTINGS$YEAR,"_", SETTINGS$MONTH,".csv"))
     relationsBackup = relations
     commentsBackup  = comments
     articlesBackup = articles
-    
-    articles = articlesBackup
-    comments = commentsBackup
-    relations = relationsBackup
     
     #----------------------------SELECT AND TRANSFROM DATA-----------------------------------------
     relations = selectRelations ( relations, articles, SETTINGS )
@@ -70,9 +43,18 @@ main = function(SETTINGS){
     #----------------------------EXPORT DATA-------------------------------------------------------
     exportGeneral( generalResults, SETTINGS )
     exportGroups ( groupResults, SETTINGS )
+    cacheGraph( graph, SETTINGS )
     
-    png(width = 800, height = 800, filename=paste0("./output/graphs/", SETTINGS$MONTH, "group_graph.png"))
-       drawGraph( graph, groupResults )
+    #########################################
+    #                                       #
+    #     MANUAL RECODE OF GROUPS NUMBER    #
+    #                                       #
+    #########################################
+    
+    cacheGroups( groupResults, SETTINGS ) #<- Do after manual recode of groups number
+    
+    png(width = 800, height = 800, filename=paste0("./output/", SETTINGS$YEAR, "/graphs/", SETTINGS$MONTH, "group_graph.png"))
+       drawGraph( graph, groupResults, SETTINGS )
     dev.off()
 }
 

@@ -6,7 +6,7 @@ groupResults2 = groupResults
 
 
 #----------------------------Transition between two groups------------------------
-    g1 = membership(groupResults1[[length(groupResults1)]])   
+    g1 = groupResults[[length(groupResults)]]   
     g1 = t(rbind(names(g1),g1))
     g1 = data.frame(g1)
     names(g1) = c("id", "group1")

@@ -7,7 +7,7 @@ exportGeneral = function( resultsGeneral, SETTINGS ){
 
 exportGeneralHTML = function( results, SETTINGS ){
     source("./functions/exportHTML.R")
-    sink(paste0("./output/", SETTINGS$MONTH,"_general.html"))  
+    sink(paste0("./output/", SETTINGS$YEAR,"/", SETTINGS$MONTH,"_general.html"))  
     
     HTMLheader( "general" , SETTINGS )
     

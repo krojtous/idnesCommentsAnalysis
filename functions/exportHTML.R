@@ -9,12 +9,12 @@ HTMLheader = function ( subject , SETTINGS){
     <HEAD>")
         cat(paste0("<title>",subject, " results: ", months[MONTH] ,"</title>"))
         cat("<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\">
-        <link rel=\"stylesheet\" type=\"text/css\" href=\"styles/groups.css\">
+        <link rel=\"stylesheet\" type=\"text/css\" href=\"../styles/groups.css\">
         </HEAD>
       <BODY>")
         
     cat(paste0("
-            <h1>",subject, " results: ", months[MONTH] ,"</h1>
+            <h1>",subject, " results: ", months[MONTH] ," ", SETTINGS$YEAR,"</h1>
 "))
     
     cat(paste0("

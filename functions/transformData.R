@@ -3,11 +3,25 @@
 
 #------------------------transfromData----------------------------------------------
 transformData = function ( relations, SETTINGS ){
-    relations = weightPositiveRelations( relations )
-    #relations = weightRelations        ( relations )
-    relations = transfromWeights       ( relations, SETTINGS )
-    graph     = transformToGraph       ( relations )
-    return    = graph
+    
+    graphPath = paste0("./data/graphs/",
+                       SETTINGS$MONTH, "_",
+                       SETTINGS$THRESHOLD,"_", 
+                       SETTINGS$CATEGORY,"_",
+                       SETTINGS$TO_DIVIDE,"(",
+                       paste(SETTINGS$TAGS, collapse = '-')
+                       ,")graph.txt")
+    
+     require(igraph)
+    if( file.exists(SETTINGS$GRAPH_PATH)){
+        return = read.graph(SETTINGS$GRAPH_PATH, "ncol")
+    } else{ 
+        relations = weightPositiveRelations( relations )
+        #relations = weightRelations        ( relations )
+        relations = transfromWeights       ( relations, SETTINGS )
+        graph     = transformToGraph       ( relations )
+        return    = graph
+    }
 }
 
 
@@ -59,7 +73,7 @@ transfromWeights = function(relationsW, SETTINGS){
 
 #------------------------transformToGraph---------------------------------
 transformToGraph = function(relations){
-    require(igraph)
+
     relationsW = as.matrix(relations)
     graph      = graph.data.frame(relationsW, directed=F)
     

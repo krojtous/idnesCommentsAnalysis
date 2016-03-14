@@ -59,13 +59,13 @@ statsAfterSelect = function(graph, comments, articles, relations, SETTINGS){
 #-------------------drawBasicGraphs-------------------------------------
 drawBasicGraphs = function(graph, relationsBackup, relations, SETTINGS){
     #graphs - MOVE IN SEPERATE FUNCTION
-    png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "general_graph1.png"))
+    png(filename=paste0("./output/", SETTINGS$YEAR, "/graphs/", SETTINGS$MONTH, "general_graph1.png"))
     plot(degree.distribution(graph), xlab="node degree", main="After transfromation")
     lines(degree.distribution(graph))
     dev.off()
     
     tableActions = table(c(relationsBackup$reacting_person_id, relationsBackup$commenting_person_id))    
-    png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "general_graph2.png"))
+    png(filename=paste0("./output/", SETTINGS$YEAR, "/graphs/", SETTINGS$MONTH, "general_graph2.png"))
     hist(log10(tableActions),
          breaks = 30,
          main = paste("Raw data"),
@@ -73,7 +73,7 @@ drawBasicGraphs = function(graph, relationsBackup, relations, SETTINGS){
     dev.off()
     
     tableActions = table(c(relations$reacting_person_id, relations$commenting_person_id))
-    png(filename=paste0("./output/graphs/", SETTINGS$MONTH, "general_graph3.png"))
+    png(filename=paste0("./output/", SETTINGS$YEAR, "/graphs/", SETTINGS$MONTH, "general_graph3.png"))
     hist(log10(tableActions),
          breaks = 30,
          main = paste("Selected data data"),
