@@ -19,7 +19,9 @@ SETTINGS = list(
     SIZE_OF_GROUP = 5, #how big should be the smallest analzyed subgroup
     GROUPS = 3, #How many groups will be indetified in data
     GROUP_ALG = 1, #1 - random walks, 2 - spinglass (exact number of groups)
-    GROUP_COLORS = c("brown","blue","red", "green", "pink", "grey", "orange", "purple", "black", "white"),
+    GROUP_COLORS = c("chocolate","blue","red", "green", "hotpink", "purple", "grey", "orange", "black", "white"),
+   #GROUP_NAMES = c("brown","blue","red", "green", "pink", "purple", "grey", "orange", "black", "white"),
+    GROUP_NAMES = c("anti-Islamic","pro-Western","pro-Russia", "pro-Islamic", "pro-homosexual", "anti-Barnevernet", "other", "orange", "black", "white"),
     
     #---EXPORT SETTINGS
     CACHE_DATA = 1, #true/false - should be generated graph, groups and others procesed data saved for further using?

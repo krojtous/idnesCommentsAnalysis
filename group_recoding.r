@@ -19,8 +19,12 @@ source("./functions/cacheData.R")
 # 5 - prohomosexuální - růžová
 # 6 - Barnevernet - fialová
 # 7 - jiná - šedá
-GROUP_VECTOR = c(2,1,1,1,1,1,1,1,1,1)
+GROUP_VECTOR = c(1,6,2,3,7,3,7,2,5,7)
 
 recodeAndCacheGroups( groupResults, SETTINGS, GROUP_VECTOR) #<- Do after manual set of GROUP_VECTOR
 groupResults   = analyzeGroups ( graph, comments, relations, SETTINGS )
 exportGroups ( groupResults, SETTINGS )
+
+png(width = 800, height = 800, filename=paste0("./output/", SETTINGS$YEAR, "/graphs/", SETTINGS$MONTH, "group_graph.png"))
+    drawGraph( graph, groupResults, SETTINGS )
+dev.off()

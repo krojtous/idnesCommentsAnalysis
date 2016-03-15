@@ -49,15 +49,15 @@ describeGroup = function( graph, groups, comments, relationsOrig, i, SETTINGS ){
     
     #----function which describe one group in basic stats (in degree, out degree, typical commnets, number of vertices...)
     groupColorEng   = SETTINGS$GROUP_COLORS
+
     
     #make a subgraph from group
     subg = induced.subgraph(graph, which(membership(groups) == i))
     
-    
+
     out = list(
         color    = groupColorEng[i],
-        size     = sizes(groups)[ i ],
-        groupSig = communitySignificanceTest( graph, groups, i ),
+        size     = length(which(groups$membership == i)),
         density  = graph.density(subg, loops=FALSE),
         centrality = centr_degree(subg)$centralization,
         commentsDesc = commentsDesc(graph, comments, groups, i),
@@ -80,7 +80,6 @@ describeGroup = function( graph, groups, comments, relationsOrig, i, SETTINGS ){
 formatData = function( out ){
     #----format list of data to better dormat (add names to attributes)
     names( out$size )    = "Number of vertices"
-    names( out$groupSig) = "Wilcox significance test"
     return = out
 }
 

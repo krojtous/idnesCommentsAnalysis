@@ -36,14 +36,14 @@ exportGroupsHTML = function( groupResults, SETTINGS ){
 #------------------------------------exportGroupDescHTML----------------------------------
 exportGroupDescHTML = function( groupResults, group, SETTINGS ){
         groupColorEng   = SETTINGS$GROUP_COLORS
-        cat(paste0("<h2>", groupColorEng[group]," group</h2>\n"))  
+        groupName   = SETTINGS$GROUP_NAMES
+        cat(paste0("<h2>", groupName[group]," group (",groupColorEng[group],")</h2>\n"))  
         
         cat(paste0("<ul>
                         <li>Size: ", groupResults[[group]]$size, "</li>\n
                         <li>Number of comments: ", groupResults[[group]]$commentsDesc$numberComm , "</li>\n
                         <li>Number of likes: ", groupResults[[group]]$commentsDesc$numberLikes , "</li>\n
                         <li>Number of dislikes: ", groupResults[[group]]$commentsDesc$numberDislikes , "</li>\n
-                        <li>Wilcox test: ", groupResults[[group]]$groupSig, "</li>
                         <li>Density: ", round(groupResults[[group]]$density, digits = 2), "</li>\n
                         <li>Centrality: ", round(groupResults[[group]]$centrality, digits = 2), " (degree)</li>\n"
                    )
@@ -72,7 +72,7 @@ exportGroupDescHTML = function( groupResults, group, SETTINGS ){
 #------------------------------------exportSmallGroupDescHTML----------------------------------
 exportSmallGroupDescHTML = function( groupResults, group, SETTINGS ){
     groupColorEng   = SETTINGS$GROUP_COLORS
-    cat(paste0("<h2> Groups smaller than " , SETTINGS$SIZE_OF_GROUP, " (",groupColorEng[group],")</h2>\n"))  
+    cat(paste0("<h2>", SETTINGS$GROUP_NAMES[group]," groups (",groupColorEng[group],", smaller than " , SETTINGS$SIZE_OF_GROUP, " and unclassifiable)</h2>\n"))  
     
     cat(paste0("<ul>
                <li>Size: ", groupResults[[group]]$size, "</li>\n
