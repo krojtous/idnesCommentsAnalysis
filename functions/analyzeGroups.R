@@ -67,7 +67,7 @@ describeGroup = function( graph, groups, comments, relationsOrig, i, SETTINGS ){
     new_id = 1
     for(comment_id in selectTypicalComments(groups, relationsOrig, i, 5)){
         out$comments[[new_id]] = list()
-        out$comments[[new_id]]$text = paste(comments[which(comments$comment_id == comment_id),1]) #paste is here to conversion from factor to text
+        out$comments[[new_id]]$text = paste(comments[which(comments$comment_id == comment_id),1]) #paste is here due to conversion from factor to text
         out$comments[[new_id]]$article = paste(comments[which(comments$comment_id == comment_id),5])
         out$comments[[new_id]]$date = paste(comments[which(comments$comment_id == comment_id),8])
         new_id = new_id + 1
