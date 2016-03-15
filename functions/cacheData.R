@@ -8,21 +8,27 @@ cacheGraph = function( graph, SETTINGS ){
 }
 
 #----------------Save membership of groups to text file-------------------------
-cacheGroups = function( groupResults, SETTINGS ){
+recodeAndCacheGroups = function( groupResults, SETTINGS, GROUP_VECTOR ){
     
-        if( ! file.exists(SETTINGS$MEMBERSHIP_PATH) && SETTINGS$CACHE_DATA == 1 ){
+
             require("tcltk")
             button = tkmessageBox(message = "Chces ulozit clenstvi ve skupinach? (Melo by byt spravne rekodovane...)",
                                   icon = "question", type = "yesno", default = "yes")
             button = tclvalue(button)
             if(button == 'yes'){
-                g1 = membership(groupResults[[length(groupResults)]])
-                g1 = t(rbind(names(g1),g1))
-                g1 = data.frame(g1)
-                names(g1) = c("id", "group1")
-                g1[, 2] = as.integer(g1[, 2])
+                library(plyr)
+                newMembership = groupResults[[length(groupResults)]]$membership
+                newMembership = mapvalues(newMembership, from = c(1:length(unique(newMembership))), to = GROUP_VECTOR)
+               
+                save(newMembership, file = SETTINGS$MEMBERSHIP_PATH)
             }
-          }
+          
     
 }
+
+#-----------------------------------renameGroups----------------------------
+renameGroups = function( groupResults, GROUP_VECTOR ){
+
+}
+
 

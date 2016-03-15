@@ -22,9 +22,9 @@ selectRelations = function ( relations, articles, SETTINGS){
 selectComments = function ( comments, articles, SETTINGS ){
     #-----main function for selecting comments
     comments = selectCommWithoutNA(comments)
+    comments = unique(comments)
     if( SETTINGS$CATEGORY != "all" ){
-        #TODO
-        #relations = selectCommByCategory( relations, SETTINGS$CATEGORY )
+        comments = selectCommByCategory( relations, comments, SETTINGS$CATEGORY )
     }
     if( SETTINGS$TAGS[1] != "all" ){
         comments = selectByTags( comments, articles, SETTINGS )
@@ -96,4 +96,9 @@ selectByTagKrimi = function( data, articles, SETTINGS ){
     data = data[data$article_id %in% a,]
     comments2 = comments[comments$article_id %in% a,]
     return = data
+}
+#---------------------selectCommByCategory-------------------------------------------------
+selectCommByCategory = function( relations, comments, CATEGORY ){
+    listOfComments = unique(relations[,'comment_id'])
+    return = comments[comments$comment_id %in% listOfComments,]
 }

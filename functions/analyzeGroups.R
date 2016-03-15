@@ -4,26 +4,18 @@
 analyzeGroups = function( graph, comments, relations, SETTINGS ){
     #----main function for analyzing groups
     
-    graphPath = paste0("./data/groups/",
-                       SETTINGS$MONTH, "_",
-                       SETTINGS$THRESHOLD,"_", 
-                       SETTINGS$CATEGORY,"_",
-                       SETTINGS$TO_DIVIDE,"(",
-                       paste(SETTINGS$TAGS, collapse = '-'),"_",
-                       SETTINGS$SIZE_OF_GROUP,"_",
-                       SETTINGS$TO_DIVIDE,"_",
-                       SETTINGS$TO_DIVIDE,"_",
-                       ")groups.txt")
+   
     
     
-    if( file.exists(graphPath)){
-        return = read.graph(graphPath, "ncol")
-    } else{ 
-        groups = findGroups( graph, SETTINGS )
-        #remove too small groups
-        groups = mergingSmallGroups( groups, SETTINGS )
+    groups = findGroups( graph, SETTINGS )
+      
+    groups = mergingSmallGroups( groups, SETTINGS )
+
+    #use of cahed group memebrship from previous recoding
+    if( file.exists(SETTINGS$MEMBERSHIP_PATH)){
+        load(file = SETTINGS$MEMBERSHIP_PATH) #load vector "newMembership" from text file
+        groups$membership = as_membership(newMembership)
     }
-    
     #description of each group
     out = list()
     for( i in  1:length(groups) ){

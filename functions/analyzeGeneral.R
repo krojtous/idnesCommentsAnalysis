@@ -43,15 +43,14 @@ statsBeforeSelect = function(articlesBackup, commentsBackup, relationsBackup){
 
 #---------------------statsAfterSelect----------------------------------
 statsAfterSelect = function(graph, comments, articles, relations, SETTINGS){
-    
-    
+
     return = list(
         usersN      = length(V(graph)),
         E           = length(E(graph)),
         density     = graph.density(graph),
         commentsN   = nrow(comments),
         relationsN  = nrow(relations),
-        articlesN   = length ( unique (articles[articles$tag %in% SETTINGS$TAGS,6] ) )
+        articlesN   = length ( unique(as.character(comments[,'article_id'])) )
     )
 }
 

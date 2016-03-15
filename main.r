@@ -45,17 +45,24 @@ main = function(SETTINGS){
     exportGroups ( groupResults, SETTINGS )
     cacheGraph( graph, SETTINGS )
     
+    png(width = 800, height = 800, filename=paste0("./output/", SETTINGS$YEAR, "/graphs/", SETTINGS$MONTH, "group_graph.png"))
+        drawGraph( graph, groupResults, SETTINGS )
+    dev.off()
+    
+    
+    
     #########################################
     #                                       #
     #     MANUAL RECODE OF GROUPS NUMBER    #
     #                                       #
     #########################################
+    #RENAME GROUPS MANUALY
+    #Vector to rename (groups 1:10 rename to VECTOR)
+    GROUP_VECTOR = c(2,1,1,1,1,1,1,1,1,1)
     
-    cacheGroups( groupResults, SETTINGS ) #<- Do after manual recode of groups number
-    
-    png(width = 800, height = 800, filename=paste0("./output/", SETTINGS$YEAR, "/graphs/", SETTINGS$MONTH, "group_graph.png"))
-       drawGraph( graph, groupResults, SETTINGS )
-    dev.off()
+    recodeAndCacheGroups( groupResults, SETTINGS, GROUP_VECTOR) #<- Do after manual set of GROUP_VECTOR
+    groupResults   = analyzeGroups ( graph, comments, relations, SETTINGS )
+    exportGroups ( groupResults, SETTINGS )
 }
 
 for( i in  1:8){
