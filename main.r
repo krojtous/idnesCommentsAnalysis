@@ -47,10 +47,10 @@ main = function(SETTINGS){
      exportGroups ( graph, groupResults, SETTINGS ) #making graphs and exporting to chosen format (HTML)
      exportIndividuals( individualsReuslts, SETTINGS )
      cacheGraph( graph, SETTINGS )
-     #----------------------------END ALERT---------------------------------------------------------
-   
+    
 }
-#analyze more months
+
+#analyze more months together
 source("./settings.r")
 for( i in  5:12){
     SETTINGS$MONTH = i
@@ -62,32 +62,5 @@ button = tkmessageBox(message = "Hotovo!",
                       icon = "question", type = "ok")
 
 
-source("./settings.r")
-source("./functions/analyzeIndividuals.R")
-source("./functions/exportIndividuals.R")
-require(igraph)
-require(plyr)
-for( i in  1:9){
-  SETTINGS$MONTH = i
-  SETTINGS = refreshPath(SETTINGS)
-  
-  #----------------------------LOAD DATA---------------------------------------------------------
-  
-  relations = read.csv (paste0("./data/",SETTINGS$YEAR,"/relations_",SETTINGS$YEAR,"_", SETTINGS$MONTH,".csv"))
-  comments  = read.csv (paste0("./data/",SETTINGS$YEAR,"/comments_",SETTINGS$YEAR,"_", SETTINGS$MONTH,".csv"))
-  articles  = read.csv (paste0("./data/",SETTINGS$YEAR,"/articles_",SETTINGS$YEAR,"_", SETTINGS$MONTH,".csv"))
-  #----------------------------SELECT AND TRANSFROM DATA-----------------------------------------
-  relations = selectRelations ( relations, articles, SETTINGS )
-  comments  = selectComments ( comments, articles, relations, SETTINGS )
-  graph     = transformData ( relations, SETTINGS )
-  
-  #-------------------------ANALYZE AND EXPORT-------------------------------
-  individualsReuslts = analyzeIndividuals(graph, comments, relations, SETTINGS)
-  exportIndividuals( individualsReuslts, SETTINGS )
-
-}
-require("tcltk")
-button = tkmessageBox(message = "Hotovo!",
-                      icon = "question", type = "ok")
 
 
