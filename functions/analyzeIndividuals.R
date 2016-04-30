@@ -32,16 +32,26 @@ leadersTransition = function(graph, SETTINGS){
   degreeNames = names(sort(degree(graph), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
   degreeNamesPrev = names(sort(degree(graphPrev), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
   degreeStability = length(degreeNames[degreeNames %in% degreeNamesPrev])/SETTINGS$COUNT_LEADERS
+  degreeLeaveIndex = length(degreeNamesPrev[degreeNamesPrev %in% V(graph)$name])/SETTINGS$COUNT_LEADERS
   
+  #invesrse wights of graph because of betweeness and closeness
+  graphInv = graph
+  E(graphInv)$weight = 1/E(graph)$weight
+  graphPrevInv = graphPrev
+  E(graphPrevInv)$weight = 1/E(graphPrev)$weight
   #betweenness leaders
-  betweennessNames = names(sort(betweenness(graph), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
-  betweennessNamesPrev = names(sort(betweenness(graphPrev), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
+  betweennessNames = names(sort(betweenness(graphInv), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
+  betweennessNamesPrev = names(sort(betweenness(graphPrevInv), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
   betweennessStability = length(betweennessNames[betweennessNames %in% betweennessNamesPrev])/SETTINGS$COUNT_LEADERS
+  betweennessLeaveIndex = length(betweennessNamesPrev[betweennessNamesPrev %in% V(graph)$name])/SETTINGS$COUNT_LEADERS
   
   #closeness leaders
-  closenessNames = names(sort(closeness(graph), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
-  closenessNamesPrev = names(sort(closeness(graphPrev), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
+  closenessNames = names(sort(closeness(graphInv), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
+  closenessNamesPrev = names(sort(closeness(graphPrevInv), decreasing = TRUE)[1:SETTINGS$COUNT_LEADERS])
   closenessStability = length(closenessNames[closenessNames %in% closenessNamesPrev])/SETTINGS$COUNT_LEADERS
+  closenessLeaveIndex = length(closenessNamesPrev[closenessNamesPrev %in% V(graph)$name])/SETTINGS$COUNT_LEADERS
+  
+  #bridge Leave index and stability (bridge = betweeness/degree)
   
   #people in general in graph
   usersStability = length(which(V(graph)$name %in% V(graphPrev)$name))/length(V(graph))
@@ -50,7 +60,10 @@ leadersTransition = function(graph, SETTINGS){
     degreeStability = degreeStability,
     betweennessStability = betweennessStability,
     closenessStability = closenessStability,
-    allUsersStability = usersStability
+    allUsersLeaveIndex = usersStability,
+    degreeLeaveIndex = degreeLeaveIndex,
+    betweennessLeaveIndex = betweennessLeaveIndex,
+    closenessLeaveIndex = closenessLeaveIndex
     
   )
 }
@@ -68,7 +81,7 @@ graphPrevMonth = function(SETTINGS){
   SETTINGS_NEW = SETTINGS
   SETTINGS_NEW$MONTH = prevM$month
   SETTINGS_NEW$YEAR = prevM$year
-  SETTINGS_NEW$GRAPH_PATH = getGraphPath(SETTINGS_NEW)
+  SETTINGS_NEW = refreshPath(SETTINGS_NEW)
   
   #loading data from previous month
   if(!file.exists(SETTINGS_NEW$GRAPH_PATH)){
@@ -80,10 +93,14 @@ graphPrevMonth = function(SETTINGS){
 
 
 
+
+
 #------------------------drawLeadersGraph------------------------------------------
 drawLeadersGraph = function(graph, leaders){
+  
+  
   allNames = names(V(graph)) 
-  inds = which(allNames %in% degreeNames)
+  leadersPos = which(allNames %in% degreeNames)
   
   shape = rep("circle", length(V(graph)))
   shape[leadersPos] = "square"
@@ -107,8 +124,3 @@ drawLeadersGraph = function(graph, leaders){
        main = "Graph of relations with leaders", mark.groups = NULL)
 }
 
-
-#-----------------------COMMENTS--------------------------------------------
-com = comments[comments$commenting_person_id == degreeNames[3],]
-com = com[order(-com$positive_score),]
-com = com[1:2,c(1,5,6,8)]

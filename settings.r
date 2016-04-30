@@ -3,8 +3,11 @@
 #----------------------------SETTINGS----------------------------------------------------------
 SETTINGS = list(
     #---SELECT AND TRANSFORMATION DATA SETTINGS
-    MONTH     = 1,
-    YEAR     = 2015,   
+    WEEK     = "02", #in format ww
+    MONTH     = 3,
+    YEAR     = 2015,
+    TIME_GRANULARITY = "month",#month/week
+    
     THRESHOLD = 0,           
     CATEGORY = "zahranicni",
     #CATEGORY  = "all",
@@ -22,32 +25,30 @@ SETTINGS = list(
     GROUP_COLORS = c("chocolate","blue","red", "green", "hotpink", "purple", "grey", "orange", "black", "white"),
    #GROUP_NAMES = c("brown","blue","red", "green", "pink", "purple", "grey", "orange", "black", "white"),
     GROUP_NAMES = c("anti-Islamic","pro-Western","pro-Russia", "pro-Islamic", "pro-homosexual", "anti-Barnevernet", "other", "orange", "black", "white"),
-    
+    #---FINDING LEADERS SETTINGS
+    COUNT_LEADERS = 50,
+   
+   
     #---EXPORT SETTINGS
     CACHE_DATA = 1, #true/false - should be generated graph, groups and others procesed data saved for further using?
     EXPORT    = "HTML"
 )
 
+source("./functions/fileManip.R")
 #Apeend path of cached graph
-SETTINGS = c(SETTINGS, GRAPH_PATH = paste0("./data/graphs/", SETTINGS$YEAR ,"/",
-                                           SETTINGS$YEAR, "_",
-                                           SETTINGS$MONTH, "_",
-                                           SETTINGS$THRESHOLD,"_", 
-                                           SETTINGS$CATEGORY,"_",
-                                           SETTINGS$TO_DIVIDE,"(",
-                                           paste(SETTINGS$TAGS, collapse = '-')
-                                           ,")graph.txt"))
+SETTINGS = c(SETTINGS, GRAPH_PATH = getGraphPath(SETTINGS))
 
 #Apeend path of cached membership
-SETTINGS = c(SETTINGS, MEMBERSHIP_PATH = paste0("./data/groups/", SETTINGS$YEAR ,"/",
-                                           SETTINGS$YEAR, "_",
-                                           SETTINGS$MONTH, "_",
-                                           SETTINGS$THRESHOLD,"_", 
-                                           SETTINGS$CATEGORY,"_",
-                                           SETTINGS$TO_DIVIDE,"_",
-                                           SETTINGS$GROUPS,"_",
-                                           SETTINGS$SIZE_OF_GROUP,"_",
-                                           SETTINGS$GROUP_ALG,"(",
-                                           paste(SETTINGS$TAGS, collapse = '-')
-                                           ,")groups.txt"))
+SETTINGS = c(SETTINGS, MEMBERSHIP_PATH = getMemberPath(SETTINGS))
+
+#Apeend path of cached membership
+SETTINGS = c(SETTINGS, OUTPUT_PATH = getOutputPath(SETTINGS))
+
+refreshPath = function(SETTINGS){
+source("./functions/fileManip.R")
+SETTINGS$GRAPH_PATH = getGraphPath(SETTINGS)
+SETTINGS$MEMBERSHIP_PATH = getMemberPath(SETTINGS)
+SETTINGS$OUTPUT_PATH = getOutputPath(SETTINGS)
+return(SETTINGS)
+}
 

@@ -17,7 +17,7 @@ recodeAndCacheGroups = function( groupResults, SETTINGS, GROUP_VECTOR ){
             button = tclvalue(button)
             if(button == 'yes'){
                 library(plyr)
-                newMembership = groupResults[[length(groupResults)]]$membership
+                newMembership = groupResults$groups$membership
                 newMembership = mapvalues(newMembership, from = c(1:length(unique(newMembership))), to = GROUP_VECTOR)
                
                 save(newMembership, file = SETTINGS$MEMBERSHIP_PATH)

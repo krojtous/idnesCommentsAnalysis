@@ -4,7 +4,7 @@
 #-----------------------------selectRelations------------------------------------------------
 selectRelations = function ( relations, articles, SETTINGS){
     #-----main function for selecting relations
-    
+
     relations = selectWithoutNA ( relations )
     if( SETTINGS$CATEGORY != "all" ){
         relations = selectByCategory( relations, SETTINGS$CATEGORY )
@@ -13,13 +13,15 @@ selectRelations = function ( relations, articles, SETTINGS){
         relations = selectByTags( relations, articles, SETTINGS )
     }
     #notice that we choose first category and tags then  treshold (we want only active users in given category)
+    if( SETTINGS$TIME_GRANULARITY == "week" ){
+      relations = selectByWeek( relations, articles, SETTINGS$WEEK )
+    }
     relations = selectByThreshold( relations, SETTINGS$THRESHOLD )
     return = relations
 }
 
-
-#---------------------------selectComments----------------------------------------------
-selectComments = function ( comments, articles, SETTINGS ){
+#-----------------------------selectComments----------------------------------------------
+selectComments = function ( comments, articles, relations, SETTINGS ){
     #-----main function for selecting comments
     comments = selectCommWithoutNA(comments)
     comments = unique(comments)
@@ -29,27 +31,27 @@ selectComments = function ( comments, articles, SETTINGS ){
     if( SETTINGS$TAGS[1] != "all" ){
         comments = selectByTags( comments, articles, SETTINGS )
     }
+    if( SETTINGS$TIME_GRANULARITY == "WEEK" ){
+      comments = selectByWeek( comments, articles, SETTINGS$WEEK )
+    }
     return = comments
 }
 
-
-#---------------------------selectCommWithoutNA--------------------------------------------
+#-----------------------------selectCommWithoutNA--------------------------------------------
 selectCommWithoutNA = function ( comments )
 {
     #---- Remove rows with NA  
     return = comments[!is.na(comments$positive_score),]  
 }
 
-
-#---------------------------selectWithoutNA--------------------------------------------
+#-----------------------------selectWithoutNA--------------------------------------------
 selectWithoutNA = function ( relations )
 {
     #---- Remove rows with NA  
     return = relations[!is.na(relations$commenting_person_id),]  
 }
 
-
-#---------------------------selectByCategory-------------------------------------------
+#-----------------------------selectByCategory-------------------------------------------
 selectByCategory = function ( relations, category )
 {
     #----select only realtions which are in the article of given category (zahranicni, domaci...)
@@ -57,8 +59,7 @@ selectByCategory = function ( relations, category )
     return = relations
 }
 
-
-#-------------------------selectByThreshold-------------------------------------------
+#-----------------------------selectByThreshold-------------------------------------------
 selectByThreshold = function ( relations, threshold )
 {
     #----Select users which gives and get more likes than given treshold
@@ -72,7 +73,7 @@ selectByThreshold = function ( relations, threshold )
     return = relations
 }
 
-#-----------------------selectByTags-------------------------------------------------
+#-----------------------------selectByTags-------------------------------------------------
 selectByTags = function( data, articles, SETTINGS ){
     #----Select relations or comments (data) by tags of articles
 
@@ -83,9 +84,7 @@ selectByTags = function( data, articles, SETTINGS ){
     return = data
     }
 
-
-
-#-----------------------selectByTagKrimi-------------------------------------------------
+#-----------------------------selectByTagKrimi-------------------------------------------------
 selectByTagKrimi = function( data, articles, SETTINGS ){
     #----Select relations or comments (data) by tags of articles
     
@@ -97,8 +96,18 @@ selectByTagKrimi = function( data, articles, SETTINGS ){
     comments2 = comments[comments$article_id %in% a,]
     return = data
 }
-#---------------------selectCommByCategory-------------------------------------------------
+
+#-----------------------------selectCommByCategory-------------------------------------------------
 selectCommByCategory = function( relations, comments, CATEGORY ){
     listOfComments = unique(relations[,'comment_id'])
     return = comments[comments$comment_id %in% listOfComments,]
+}
+
+#-----------------------------selectByWeek--------------------------------------------------
+selectByWeek = function( data, articles, WEEK ){
+  #in data are two different formats of dates %d.%m.%Y and Y%-%m-%d
+#WEEK = SETTINGS$WEEK
+#data = relations
+  listOfArticles = unique(articles[which(strftime(as.Date(articles$date),format="%V") == WEEK),'article_id'])
+  return = data[data$article_id %in% listOfArticles,]
 }

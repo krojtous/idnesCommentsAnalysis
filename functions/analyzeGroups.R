@@ -1,30 +1,35 @@
 #analyzeGroups.R
 
 #-------------------------------------analyzeGroups-------------------------------------
-analyzeGroups = function( graph, comments, relations, SETTINGS ){
+analyzeGroups = function( graph, comments, relations, relationsBackup, commentsBackup, SETTINGS ){
     #----main function for analyzing groups
-    
-   
-    
     
     groups = findGroups( graph, SETTINGS )
       
     groups = mergingSmallGroups( groups, SETTINGS )
-
+    
+    out = list()
     #use of cahed group memebrship from previous recoding
     if( file.exists(SETTINGS$MEMBERSHIP_PATH)){
         load(file = SETTINGS$MEMBERSHIP_PATH) #load vector "newMembership" from text file
         groups$membership = as_membership(newMembership)
     }
+    out$groups = groups
+    
     #description of each group
-    out = list()
+
     for( i in  1:length(groups) ){
-        out[[i]] = describeGroup( graph, groups, comments, relations, i, SETTINGS )
+        out$groupsDesc[[i]] = describeGroup( graph, groups, comments, relations, i, SETTINGS )
     }
     
-    out[[ length(groups) + 1 ]] = groups
-    
-
+    #Group proximity and transition (is executed only for recoded groups)
+    if(file.exists(SETTINGS$MEMBERSHIP_PATH)){
+        out$proximityMatrix = groupsOpinionProximity(graph, comments, groups, relationsBackup, commentsBackup)
+       
+        source("./functions/groupTransition.R")
+        out$transitionMatrix = groupTransition( groups, SETTINGS )
+        
+    }
     return = out
   
 }
@@ -43,7 +48,6 @@ findGroups = function ( graph, SETTINGS ){
     return = groups
 }
 
-
 #-------------------------------------describeGroup-------------------------------------------
 describeGroup = function( graph, groups, comments, relationsOrig, i, SETTINGS ){
     
@@ -53,13 +57,21 @@ describeGroup = function( graph, groups, comments, relationsOrig, i, SETTINGS ){
     
     #make a subgraph from group
     subg = induced.subgraph(graph, which(membership(groups) == i))
+    #invesrse weights of graph because of betweeness
+    subgInv = subg
+    E(subgInv)$weight = 1/E(subg)$weight
+   
     
-
     out = list(
         color    = groupColorEng[i],
         size     = length(which(groups$membership == i)),
         density  = graph.density(subg, loops=FALSE),
-        centrality = centr_degree(subg)$centralization,
+        centrality_deg = centralization.degree(subg, mode = "all")$centralization, #normalized
+        centrality_clo = centralization.closeness(subgInv, mode = "all")$centralization,
+        centrality_betw = centralization.betweenness(subgInv)$centralization,
+        avg_centrality_deg = mean(centralization.degree(subg, mode = "all")$res),
+        avg_centrality_betw = mean(centralization.betweenness(subgInv)$res),
+        avg_centrality_clo = mean(centralization.closeness(subgInv, mode = "all")$res),
         commentsDesc = commentsDesc(graph, comments, groups, i),
         comments = list()
     )
@@ -76,13 +88,13 @@ describeGroup = function( graph, groups, comments, relationsOrig, i, SETTINGS ){
     out = formatData( out ) #add attribute names etc.
     return = out
 }
+
 #-------------------------------------formatData-------------------------------------------
 formatData = function( out ){
     #----format list of data to better dormat (add names to attributes)
     names( out$size )    = "Number of vertices"
     return = out
 }
-
 
 #-------------------------selectTypicalComments---------------------------------
 selectTypicalComments = function(wc, relations, group, number = 3){ #Puvodne se zde pracuje s originalnimi daty !!!!
@@ -138,19 +150,18 @@ commentsDesc = function(graph, comments, groups, i){
 }
 
 #------------------------------groupsOpinionProximity---------------------------------
-groupsOpinionProximity = function(graph, comments, groups, i){
-    groups = groupResults[length(groupResults)]
-    groupsNumber = c(1:4)
+groupsOpinionProximity = function(graph, comments, groups, relationsBackup, commentsBackup){
+    groupsCount = length(groups)
     C = matrix( 
-        c(rep(0, length(groupsNumber)*length(groupsNumber) )), 
-        nrow=length(groupsNumber), 
-        ncol=length(groupsNumber)) 
+        c(rep(0, groupsCount*groupsCount )), 
+        nrow=groupsCount, 
+        ncol=groupsCount) 
     
-    for(i in groupsNumber){
+    for(i in c(1:groupsCount)){
            
-        for(j in groupsNumber){
-        vs1 = groups[[1]][[i]]
-        vs2 = groups[[1]][[j]]
+        for(j in c(1:groupsCount)){
+        vs1 = names(which(membership(groups) == i ))
+        vs2 = names(which(membership(groups) == j ))
         
         rel = relationsBackup[relationsBackup$positive_reaction == 1,]
         rel = rel[rel$commenting_person_id %in% vs2, ]
@@ -169,7 +180,7 @@ groupsOpinionProximity = function(graph, comments, groups, i){
         C[i, j] = round(proximity, digits = 2)
         }
     }
-    c2 = data.frame(C)
+    out = C
 }
 
 #------------------------------mergingSmallGroups---------------------------------

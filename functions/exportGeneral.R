@@ -7,7 +7,7 @@ exportGeneral = function( resultsGeneral, SETTINGS ){
 
 exportGeneralHTML = function( results, SETTINGS ){
     source("./functions/exportHTML.R")
-    sink(paste0("./output/", SETTINGS$YEAR,"/", SETTINGS$MONTH,"_general.html"))  
+    sink(paste0(SETTINGS$OUTPUT_PATH,"/", SETTINGS$MONTH,"_general.html"))  
     
     HTMLheader( "general" , SETTINGS )
     
@@ -36,11 +36,28 @@ exportGeneralHTML = function( results, SETTINGS ){
                <ul>
                 <li>Comments: ", results$afterSelect$commentsN," (", round( results$afterSelect$commentsN/results$beforeSelect$commentsN*100 , 1)," %)</li>
                 <li>Relations: ", results$afterSelect$relationsN," (", round( results$afterSelect$relationsN/results$beforeSelect$relationsN*100 , 1)," %)</li>
+                <li>Positive relations: ", results$afterSelect$relationsNPos," (", round( results$afterSelect$relationsNPos/results$beforeSelect$relationsN*100 , 1)," %)</li>
                 <li>Articles: ", results$afterSelect$articlesN," (", round( results$afterSelect$articlesN/results$beforeSelect$articlesN*100 , 1)," %)</li>
                 <li>Users: ", results$afterSelect$usersN," (", round( results$afterSelect$usersN/results$beforeSelect$usersN*100 , 1)," %)</li>
                 <br />
+<h3>Graph</h3>
                 <li>Edges: ", results$afterSelect$E,"</li>
+                <li>Sum weight of edges: ", results$afterSelect$sumWeightEdges,"</li>
                 <li>Density: ", round(results$afterSelect$density, 2),"</li>
+
+                <li>Centralization (normalized): </li>
+                <ul>
+                    <li>Degree: ", round(results$afterSelect$centrality_deg, digits = 2), "</li>\n
+                    <li>Closeness: ", round(results$afterSelect$centrality_clo, digits = 2), "</li>\n
+                    <li>Betweeness: ", round(results$afterSelect$centrality_betw, digits = 2), "</li>\n
+               
+               </ul>
+                <li>Average centrality: 
+                           <ul>
+                           <li>Degree: ", round(results$afterSelect$avg_centrality_deg, digits = 2), "</li>\n
+                       <li>Closeness: ", round(results$afterSelect$avg_centrality_clo, digits = 2), "</li>\n
+                       <li>Betweeness: ", round(results$afterSelect$avg_centrality_betw, digits = 2), "</li>\n
+                   </ul>    
                </ul>"))
     
     

@@ -4,15 +4,7 @@
 #------------------------transfromData----------------------------------------------
 transformData = function ( relations, SETTINGS ){
     
-    graphPath = paste0("./data/graphs/",
-                       SETTINGS$MONTH, "_",
-                       SETTINGS$THRESHOLD,"_", 
-                       SETTINGS$CATEGORY,"_",
-                       SETTINGS$TO_DIVIDE,"(",
-                       paste(SETTINGS$TAGS, collapse = '-')
-                       ,")graph.txt")
-    
-     require(igraph)
+    require(igraph)
     if( file.exists(SETTINGS$GRAPH_PATH)){
         return = read.graph(SETTINGS$GRAPH_PATH, "ncol")
     } else{ 
