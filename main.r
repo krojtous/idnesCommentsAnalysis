@@ -37,13 +37,13 @@ main = function(SETTINGS){
     graph     = transformData ( relations, SETTINGS )
     
     #----------------------------ANALYZE DATA------------------------------------------------------
-    generalResults = analyzeGeneral( graph, relations, comments, articles, commentsBackup, relationsBackup, articlesBackup, SETTINGS )
+     generalResults = analyzeGeneral( graph, relations, comments, articles, commentsBackup, relationsBackup, articlesBackup, SETTINGS )
     #list of each groups, group description, proximityMatrix, transitionMatrix etc...
      groupResults   = analyzeGroups ( graph, comments, relations, relationsBackup, commentsBackup, SETTINGS )
      individualsReuslts = analyzeIndividuals(graph, comments, relations, SETTINGS)
      
     #----------------------------EXPORT DATA-------------------------------------------------------
-    exportGeneral( generalResults, SETTINGS )
+     exportGeneral( generalResults, SETTINGS )
      exportGroups ( graph, groupResults, SETTINGS ) #making graphs and exporting to chosen format (HTML)
      exportIndividuals( individualsReuslts, SETTINGS )
      cacheGraph( graph, SETTINGS )
@@ -52,7 +52,7 @@ main = function(SETTINGS){
 
 #analyze more months together
 source("./settings.r")
-for( i in  5:12){
+for( i in  1:2){
     SETTINGS$MONTH = i
     SETTINGS = refreshPath(SETTINGS)
     main(SETTINGS)
@@ -61,6 +61,26 @@ require("tcltk")
 button = tkmessageBox(message = "Hotovo!",
                       icon = "question", type = "ok")
 
+if(!require(installr)) {
+    install.packages("installr"); require(installr)} #load / install+load installr
+
+# using the package:
+updateR() # this will start t
 
 
 
+list.of.packages <- c("car", "QuantPsyc", "gvlma", "boot", "ggplot2", 
+                      "Amelia", "pscl", "ResourceSelection", "ROCR", 
+                      "mlogit", "MatchIt", "rgenoud", "Zelig", "nlme", 
+                      "reshape", "foreign", "corpcor", "GPArotation", 
+                      "psych", "nFactors", "dplyr", "plyr", "BinNor", 
+                      "hydroGOF", "mice", "mvtnorm", "VIM")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+hist((a),
+     main = paste("Raw data (2-20)"),
+     xlab = "síla vztahu")
+a=relations[,3]
+a=a[a != 1]
+a=a[a < 20]

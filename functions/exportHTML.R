@@ -21,15 +21,18 @@ HTMLheader = function ( subject , SETTINGS){
     
     prevM = prevMonth(SETTINGS$MONTH, SETTINGS$YEAR)
     nextM = nextMonth(SETTINGS$MONTH, SETTINGS$YEAR)
+  
     
     cat(paste0("
 <div id=\"navigation\">
 <a href=\"",MONTH,"_general.html\">General</a> |
-<a href=\"",MONTH,"_groups.html\">Groups</a> |
-<a href=\"",MONTH,"_individuals.html\">Individuals</a> <br/>
+     <a href=\"",MONTH,"_groups.html\">Groups</a> |
+               <a href=\"",MONTH,"_individuals.html\">Individuals</a> <br/>
 <a href=\"../",prevM$year,"/", prevM$month,"_",subject,".html\"><< Previous month</a> |   
 <a href=\"../",nextM$year,"/", nextM$month,"_",subject,".html\">Next month >></a>
+   
 </div>
+
 "))
 }
 
